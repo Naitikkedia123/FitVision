@@ -28,17 +28,44 @@ class Week1DosageService:
         user: UserProfile,
         exercises: list[dict[str, Any]],
     ) -> list[ValidatedDosage]:
+
+        print(
+            f"[DOSAGE] GENERATE START - {len(exercises)} exercises",
+            flush=True,
+        )
+
         if not isinstance(user, UserProfile):
             raise TypeError("user must be a UserProfile.")
 
         if not isinstance(exercises, list):
             raise TypeError("exercises must be a list.")
 
+        predictions = []
 
+        for i, exercise in enumerate(exercises, start=1):
+            print(
+                f"[DOSAGE] PREDICT {i}/{len(exercises)}: "
+                f"{exercise.get('id')}",
+                flush=True,
+            )
 
-        predictions = [
-            self.predictor.predict(user, exercise)
-            for exercise in exercises
-        ]
+            prediction = self.predictor.predict(
+                user,
+                exercise,
+            )
 
-        return validate_predictions(predictions)
+            print(
+                f"[DOSAGE] PREDICT COMPLETE: "
+                f"{exercise.get('id')}",
+                flush=True,
+            )
+
+            predictions.append(prediction)
+
+        print("[DOSAGE] VALIDATING PREDICTIONS", flush=True)
+
+        result = validate_predictions(predictions)
+
+        print("[DOSAGE] GENERATE COMPLETE", flush=True)
+
+        return result
