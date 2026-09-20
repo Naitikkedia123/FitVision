@@ -401,10 +401,11 @@ def request_workout_transition(
     message: str,
 ) -> None:
     """Queue a visual transition, then perform the normal screen rerun."""
+
     st.session_state["_screen_transition_message"] = message
     st.session_state["screen"] = screen
-    st.rerun()
 
+    st.rerun()
 
 def user_has_fitness_profile(user_id: str) -> bool:
     service = FitnessProfileService()
@@ -1770,6 +1771,7 @@ def render_trainer():
                     else "Finishing your workout..."
                 ),
             )
+            return
 
     render_html(
         f"""
@@ -2877,6 +2879,7 @@ def render_dashboard() -> None:
                         screen="trainer",
                         message="Preparing your workout...",
                     )
+                    return
                 except Exception as exc:
                     st.error(
                         "This exercise cannot be started: "
@@ -2899,7 +2902,7 @@ def render_dashboard() -> None:
                 screen="warmup",
                 message="Preparing your warm-up...",
             )
-
+            return 
     with signout_col:
         if st.button(
             "SIGN OUT",
@@ -3423,89 +3426,110 @@ def main() -> None:
 
     load_theme()
 
-    # Purely visual transition layer for workout/warm-up screen changes.
-    # It does not alter routing, database calls, workout state, or caching.
+    # Purely visual transition layer for workout/warm-up
+    # screen changes.
     render_transition_layer()
+
+    # ---------------------------------------------------------
+    # SINGLE MAIN SCREEN SLOT
+    #
+    # st.empty() is intentionally used here instead of
+    # st.container().
+    #
+    # Dashboard / Trainer / Warm-up all occupy this same
+    # placeholder. When the screen changes, the previous
+    # screen content is replaced instead of leaving multiple
+    # screen trees behind.
+    # ---------------------------------------------------------
+    screen_host = st.empty()
 
     if st.session_state.get("authenticated", False):
 
-        # -----------------------------------------------------
-        # RETURNING FROM WORKOUT / WARM-UP
-        #
-        # IMPORTANT:
-        # This MUST be checked before profile/plan checks.
-        #
-        # END WORKOUT / END WARM-UP sets this flag and calls
-        # st.rerun(). We should go directly to dashboard
-        # without making Supabase profile/plan requests again.
-        # -----------------------------------------------------
+        with screen_host.container():
 
-        if st.session_state.get("returning_from_workout", False):
-            render_dashboard()
-            return
+            # -------------------------------------------------
+            # RETURNING FROM WORKOUT / WARM-UP
+            # -------------------------------------------------
+            if st.session_state.get(
+                "returning_from_workout",
+                False,
+            ):
+                render_dashboard()
+                return
 
-        # -----------------------------------------------------
-        # TRAINER
-        # -----------------------------------------------------
+            # -------------------------------------------------
+            # TRAINER
+            # -------------------------------------------------
+            if st.session_state.get("screen") == "trainer":
+                render_trainer()
+                return
 
-        if st.session_state.get("screen") == "trainer":
-            render_trainer()
-            return
+            # -------------------------------------------------
+            # WARM-UP
+            # -------------------------------------------------
+            if st.session_state.get("screen") == "warmup":
+                render_warmup()
+                return
 
-        # -----------------------------------------------------
-        # WARM-UP
-        # -----------------------------------------------------
+            # -------------------------------------------------
+            # NORMAL AUTHENTICATED FLOW
+            # -------------------------------------------------
+            user_id = st.session_state.get("user_id")
 
-        if st.session_state.get("screen") == "warmup":
-            render_warmup()
-            return
+            if st.session_state.get(
+                "onboarding_step"
+            ) in {1, 2, 3}:
+                render_onboarding()
+                return
 
-        # -----------------------------------------------------
-        # NORMAL AUTHENTICATED FLOW
-        # -----------------------------------------------------
+            if user_id:
 
-        user_id = st.session_state.get("user_id")
+                has_profile = user_has_fitness_profile(
+                    user_id
+                )
 
-        if st.session_state.get("onboarding_step") in {1, 2, 3}:
+                if not has_profile:
+                    st.session_state["onboarding_step"] = 1
+                    render_onboarding()
+                    return
+
+                has_plan = user_has_workout_plan(
+                    user_id
+                )
+
+                if not has_plan:
+                    st.session_state["onboarding_step"] = 2
+                    render_onboarding()
+                    return
+
+                # Profile + safety + plan completed.
+                render_dashboard()
+                return
+
+            # -------------------------------------------------
+            # No user_id
+            # -------------------------------------------------
+            st.session_state["onboarding_step"] = 1
             render_onboarding()
             return
-
-        if user_id:
-            has_profile = user_has_fitness_profile(user_id)
-
-            if not has_profile:
-                # Account exists, but profile has never been completed.
-                st.session_state["onboarding_step"] = 1
-                render_onboarding()
-                return
-
-            has_plan = user_has_workout_plan(user_id)
-
-            if not has_plan:
-                # Profile exists, but onboarding is not fully completed.
-                # Send the user to the safety assessment.
-                st.session_state["onboarding_step"] = 2
-                render_onboarding()
-                return
-
-            # Profile + safety + plan already completed.
-            render_dashboard()
-            return
-
-        # No user_id available.
-        st.session_state["onboarding_step"] = 1
-        render_onboarding()
-        return
 
     # ---------------------------------------------------------
     # EMAIL CONFIRMATION
     # ---------------------------------------------------------
+    if st.session_state.get(
+        "screen"
+    ) == "email_confirmation":
 
-    if st.session_state.get("screen") == "email_confirmation":
-        render_email_confirmation()
+        with screen_host.container():
+            render_email_confirmation()
+
         return
 
-    render_auth_home()
+    # ---------------------------------------------------------
+    # AUTHENTICATION HOME
+    # ---------------------------------------------------------
+    with screen_host.container():
+        render_auth_home()
 
 
 if __name__ == "__main__":
