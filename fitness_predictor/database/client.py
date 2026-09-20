@@ -46,10 +46,9 @@ def get_supabase_client() -> Client:
     supabase_url = _get_required_env("SUPABASE_URL")
     supabase_key = _get_required_env("SUPABASE_PUBLISHABLE_KEY")
 
-    options = ClientOptions()
-
-    # supabase 2.23.0 supports a shared custom HTTPX client.
-    options.httpx_client = _create_http_client()
+    options = ClientOptions(
+        httpx_client=_create_http_client(),
+    )
 
     return create_client(
         supabase_url,
@@ -69,9 +68,9 @@ def get_supabase_admin_client() -> Client:
     supabase_url = _get_required_env("SUPABASE_URL")
     supabase_secret_key = _get_required_env("SUPABASE_SECRET_KEY")
 
-    options = ClientOptions()
-
-    options.httpx_client = _create_http_client()
+    options = ClientOptions(
+        httpx_client=_create_http_client(),
+    )
 
     return create_client(
         supabase_url,
