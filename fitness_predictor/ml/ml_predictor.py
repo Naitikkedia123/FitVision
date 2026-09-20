@@ -27,6 +27,9 @@ class MLDosagePredictor(Week1DosagePredictor):
     """
     Production dosage predictor using the trained ML models.
 
+    Models are downloaded from Hugging Face only when they
+    are actually needed.
+
     The predictor produces raw continuous predictions.
     DosageValidator remains responsible for enforcing the
     final dosage constraints.
@@ -42,6 +45,8 @@ class MLDosagePredictor(Week1DosagePredictor):
         self.reps_model_path = Path(reps_model_path)
         self.duration_model_path = Path(duration_model_path)
 
+        # Models are loaded lazily.
+        # They remain None until they are actually required.
         self.sets_bundle: dict[str, Any] | None = None
         self.reps_bundle: dict[str, Any] | None = None
         self.duration_bundle: dict[str, Any] | None = None
@@ -56,6 +61,14 @@ class MLDosagePredictor(Week1DosagePredictor):
         model_path: str | Path,
         model_name: str,
     ) -> dict[str, Any]:
+        """
+        Download the requested model if necessary and load it.
+
+        IMPORTANT:
+        The model must be downloaded BEFORE checking whether
+        the local file exists.
+        """
+
         path = Path(model_path)
 
         print(
@@ -68,9 +81,22 @@ class MLDosagePredictor(Week1DosagePredictor):
             flush=True,
         )
 
+        # ---------------------------------------------------------
+        # ENSURE MODEL EXISTS
+        # ---------------------------------------------------------
+        print(
+            f"[ML] Ensuring model is available: {model_name}",
+            flush=True,
+        )
+
+        ensure_model_available(path.name)
+
+        # ---------------------------------------------------------
+        # VERIFY LOCAL FILE
+        # ---------------------------------------------------------
         if not path.exists():
             print(
-                f"[ML] Model NOT FOUND: {path}",
+                f"[ML] Model still NOT FOUND after download: {path}",
                 flush=True,
             )
 
@@ -78,20 +104,16 @@ class MLDosagePredictor(Week1DosagePredictor):
                 f"{model_name} model not found: {path}"
             )
 
+        file_size_mb = path.stat().st_size / (1024 ** 2)
+
         print(
-            f"[ML] Model exists: {path.stat().st_size / (1024**2):.1f} MB",
+            f"[ML] Model exists: {file_size_mb:.1f} MB",
             flush=True,
         )
 
-        print(
-            f"[ML] Ensuring model is available: {model_name}",
-            flush=True,
-        )
-
-        ensure_model_available(
-            path.name,
-        )
-
+        # ---------------------------------------------------------
+        # LOAD MODEL
+        # ---------------------------------------------------------
         print(
             f"[ML] joblib.load START: {model_name}",
             flush=True,
@@ -104,11 +126,9 @@ class MLDosagePredictor(Week1DosagePredictor):
             flush=True,
         )
 
-        print(
-            f"[ML] joblib.load COMPLETE: {model_name}",
-            flush=True,
-        )
-
+        # ---------------------------------------------------------
+        # VERIFY MODEL BUNDLE
+        # ---------------------------------------------------------
         required_keys = {
             "model",
             "preprocessor",
@@ -141,6 +161,10 @@ class MLDosagePredictor(Week1DosagePredictor):
         user: UserProfile,
         exercise: dict[str, Any],
     ) -> dict[str, Any]:
+        """
+        Build the feature dictionary expected by the ML models.
+        """
+
         if not user.user_id:
             # user_id is not an ML feature, but this helps catch
             # accidentally incomplete production profiles.
@@ -194,6 +218,10 @@ class MLDosagePredictor(Week1DosagePredictor):
         bundle: dict[str, Any],
         features: dict[str, Any],
     ) -> float:
+        """
+        Run preprocessing and prediction using a loaded model bundle.
+        """
+
         import pandas as pd
 
         print(
@@ -258,10 +286,14 @@ class MLDosagePredictor(Week1DosagePredictor):
         user: UserProfile,
         exercise: dict[str, Any],
     ) -> DosagePrediction:
+        """
+        Predict dosage for a single exercise.
+        """
+
         exercise_id = exercise.get("id")
 
         print(
-            f"[ML] ========================================",
+            "========================================",
             flush=True,
         )
 
@@ -270,11 +302,18 @@ class MLDosagePredictor(Week1DosagePredictor):
             flush=True,
         )
 
+        # ---------------------------------------------------------
+        # VALIDATION
+        # ---------------------------------------------------------
         if not isinstance(user, UserProfile):
-            raise TypeError("user must be a UserProfile.")
+            raise TypeError(
+                "user must be a UserProfile."
+            )
 
         if not isinstance(exercise, dict):
-            raise TypeError("exercise must be a dictionary.")
+            raise TypeError(
+                "exercise must be a dictionary."
+            )
 
         if not exercise_id:
             raise ValueError(
@@ -296,6 +335,9 @@ class MLDosagePredictor(Week1DosagePredictor):
                 f"{measurement_type!r}"
             )
 
+        # ---------------------------------------------------------
+        # BUILD FEATURES
+        # ---------------------------------------------------------
         print(
             "[ML] Building features",
             flush=True,
@@ -314,7 +356,6 @@ class MLDosagePredictor(Week1DosagePredictor):
         # ---------------------------------------------------------
         # SETS MODEL
         # ---------------------------------------------------------
-
         if self.sets_bundle is None:
             print(
                 "[ML] Loading SETS model",
@@ -355,8 +396,8 @@ class MLDosagePredictor(Week1DosagePredictor):
         # ---------------------------------------------------------
         # REP-BASED EXERCISES
         # ---------------------------------------------------------
-
         if measurement_type == "reps":
+
             if self.reps_bundle is None:
                 print(
                     "[ML] Loading REPS model",
@@ -409,7 +450,6 @@ class MLDosagePredictor(Week1DosagePredictor):
         # ---------------------------------------------------------
         # TIME-BASED EXERCISES
         # ---------------------------------------------------------
-
         print(
             "[ML] Time-based exercise detected",
             flush=True,
