@@ -30,3 +30,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+# ML model files are downloaded from Hugging Face
+fitness_predictor/models/*.joblib
