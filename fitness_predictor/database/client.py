@@ -4,7 +4,8 @@ from functools import lru_cache
 import httpx
 from dotenv import load_dotenv
 from supabase import Client, create_client
-from supabase.lib.client_options import ClientOptions
+from supabase.lib.client_options import SyncClientOptions
+from supabase_auth import SyncMemoryStorage
 
 
 load_dotenv()
@@ -37,16 +38,11 @@ def _create_http_client() -> httpx.Client:
 
 @lru_cache(maxsize=1)
 def get_supabase_client() -> Client:
-    """
-    Regular application Supabase client.
-
-    Uses the publishable key and is subject to RLS.
-    """
-
     supabase_url = _get_required_env("SUPABASE_URL")
     supabase_key = _get_required_env("SUPABASE_PUBLISHABLE_KEY")
 
-    options = ClientOptions(
+    options = SyncClientOptions(
+        storage=SyncMemoryStorage(),
         httpx_client=_create_http_client(),
     )
 
@@ -59,16 +55,11 @@ def get_supabase_client() -> Client:
 
 @lru_cache(maxsize=1)
 def get_supabase_admin_client() -> Client:
-    """
-    Trusted backend/admin client.
-
-    Uses the secret key and must never be exposed to the frontend.
-    """
-
     supabase_url = _get_required_env("SUPABASE_URL")
     supabase_secret_key = _get_required_env("SUPABASE_SECRET_KEY")
 
-    options = ClientOptions(
+    options = SyncClientOptions(
+        storage=SyncMemoryStorage(),
         httpx_client=_create_http_client(),
     )
 
@@ -77,7 +68,6 @@ def get_supabase_admin_client() -> Client:
         supabase_secret_key,
         options=options,
     )
-
 
 def set_authenticated_session(
     access_token: str,
