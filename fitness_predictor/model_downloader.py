@@ -15,28 +15,37 @@ MODEL_FILES = (
 
 
 def ensure_models_available() -> None:
-    """
-    Make sure all FitVision prediction models exist locally.
-
-    If a model is already present, nothing is downloaded.
-    If it is missing, download it from Hugging Face.
-    """
-
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
 
     for filename in MODEL_FILES:
         destination = MODELS_DIR / filename
 
         if destination.exists() and destination.stat().st_size > 0:
+            print(f"[MODEL] Already exists: {filename}")
             continue
 
-        hf_hub_download(
+        print(f"[MODEL] START DOWNLOAD: {filename}", flush=True)
+
+        downloaded_path = hf_hub_download(
             repo_id=REPO_ID,
             filename=filename,
             local_dir=str(MODELS_DIR),
+        )
+
+        print(
+            f"[MODEL] DOWNLOAD COMPLETE: {filename} -> {downloaded_path}",
+            flush=True,
         )
 
         if not destination.exists():
             raise FileNotFoundError(
                 f"Model download failed: {filename}"
             )
+
+        print(
+            f"[MODEL] VERIFIED: {filename} "
+            f"({destination.stat().st_size / (1024**2):.1f} MB)",
+            flush=True,
+        )
+
+    print("[MODEL] ALL MODELS AVAILABLE", flush=True)
