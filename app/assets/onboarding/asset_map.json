@@ -1,0 +1,10 @@
+{
+  "login": "login_background.webp",
+  "signup": "signup_background.webp",
+  "email_confirmation": "email_confirmation_background.webp",
+  "profile_setup_step_1": "profile_setup_background.webp",
+  "physical_limitations_step_2": "limitations_background.webp",
+  "profile_ready_step_3": "profile_ready_background.webp",
+  "plan_generation": "plan_generation_background.webp",
+  "final_transition": "final_transition_background.webp"
+}

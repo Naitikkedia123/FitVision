@@ -1,0 +1,4641 @@
+/* =========================================================
+   FitVision — Global Theme
+   Responsive auth-first application UI
+   ========================================================= */
+
+:root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface-2: #171717;
+    --surface-3: #1d1d1d;
+
+    --border: rgba(255, 255, 255, 0.09);
+    --border-strong: rgba(255, 255, 255, 0.14);
+
+    --text: #e9e9e9;
+    --muted: #747474;
+    --muted-2: #555555;
+
+    --amber: #f5a623;
+    --amber-hover: #ffb63f;
+    --amber-dim: #b97a18;
+
+    --cyan: #00d4ff;
+    --success: #7dd3a8;
+    --danger: #ff6b6b;
+
+    --radius: 0px;
+
+    /* 8px spacing system */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-7: 32px;
+    --space-8: 40px;
+    --space-9: 48px;
+}
+
+
+/* =========================================================
+   Streamlit chrome
+   ========================================================= */
+
+header[data-testid="stHeader"] {
+    display: none !important;
+}
+
+[data-testid="stToolbar"] {
+    display: none !important;
+}
+
+[data-testid="stDecoration"] {
+    display: none !important;
+}
+
+footer {
+    display: none !important;
+}
+
+
+/* =========================================================
+   Application background
+   ========================================================= */
+
+.stApp {
+    min-height: 100vh;
+
+    background:
+        radial-gradient(
+            circle at 88% 9%,
+            rgba(245, 166, 35, 0.075),
+            transparent 29%
+        ),
+        radial-gradient(
+            circle at 7% 36%,
+            rgba(0, 212, 255, 0.045),
+            transparent 25%
+        ),
+        var(--bg);
+
+    color: var(--text);
+}
+
+.stApp::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+
+    background-image:
+        linear-gradient(
+            rgba(255, 255, 255, 0.017) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.017) 1px,
+            transparent 1px
+        );
+
+    background-size: 48px 48px;
+}
+
+
+/* =========================================================
+   Main Streamlit canvas
+   ========================================================= */
+
+.block-container {
+    position: relative;
+    z-index: 1;
+
+    width: 100%;
+    max-width: 1280px;
+
+    margin: 0 auto;
+
+    padding-top: 1rem !important;
+    padding-bottom: 2rem !important;
+
+    padding-left: clamp(16px, 3vw, 32px) !important;
+    padding-right: clamp(16px, 3vw, 32px) !important;
+}
+
+
+/* =========================================================
+   Base typography
+   ========================================================= */
+
+h1,
+h2,
+h3 {
+    color: var(--text);
+    letter-spacing: -0.035em;
+}
+
+h1 {
+    font-size: clamp(2.8rem, 6vw, 5.5rem);
+    line-height: 0.94;
+    font-weight: 800;
+    margin: 0;
+}
+
+h2 {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    line-height: 1;
+}
+
+h3 {
+    font-size: 1.25rem;
+    line-height: 1.15;
+}
+
+p,
+label,
+span,
+div {
+    font-family: Arial, sans-serif;
+}
+
+
+/* =========================================================
+   Shared brand utilities
+   ========================================================= */
+
+.fv-eyebrow {
+    color: var(--amber);
+
+    font-size: 0.70rem;
+    line-height: 1.2;
+    font-weight: 700;
+
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.fv-muted {
+    color: var(--muted);
+}
+
+.fv-cyan {
+    color: var(--cyan);
+}
+
+.fv-accent-line {
+    width: 48px;
+    height: 3px;
+
+    background: var(--amber);
+
+    margin:
+        var(--space-4)
+        0
+        var(--space-5);
+}
+
+
+/* =========================================================
+   Generic cards
+   ========================================================= */
+
+.fv-card {
+    position: relative;
+
+    box-sizing: border-box;
+
+    height: 100%;
+    min-height: 170px;
+
+    padding: var(--space-6);
+
+    background: rgba(17, 17, 17, 0.92);
+
+    border: 1px solid var(--border);
+
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.20);
+}
+
+.fv-card::after {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 3px;
+    height: 100%;
+
+    background: var(--amber);
+}
+
+
+/* =========================================================
+   Buttons — consistent primary/secondary system
+   ========================================================= */
+
+.stButton {
+    width: 100%;
+}
+
+.stButton > button {
+    width: 100% !important;
+
+    min-height: 46px;
+
+    padding:
+        10px
+        16px;
+
+    border-radius: 0 !important;
+
+    font-size: 0.86rem;
+    font-weight: 700;
+
+    letter-spacing: 0.02em;
+
+    transition:
+        background 140ms ease,
+        border-color 140ms ease,
+        box-shadow 140ms ease,
+        transform 140ms ease;
+}
+
+/* Primary */
+[data-testid="stBaseButton-primary"] {
+    background: var(--amber) !important;
+    color: #090909 !important;
+
+    border: 1px solid var(--amber) !important;
+}
+
+[data-testid="stBaseButton-primary"]:hover {
+    background: var(--amber-hover) !important;
+    color: #090909 !important;
+
+    border-color: var(--amber-hover) !important;
+
+    box-shadow:
+        0 0 22px rgba(245, 166, 35, 0.16);
+
+    transform: translateY(-1px);
+}
+
+/* Secondary */
+[data-testid="stBaseButton-secondary"] {
+    background: rgba(17, 17, 17, 0.96) !important;
+    color: var(--text) !important;
+
+    border: 1px solid var(--border-strong) !important;
+}
+
+[data-testid="stBaseButton-secondary"]:hover {
+    background: var(--surface-2) !important;
+
+    border-color:
+        rgba(245, 166, 35, 0.55) !important;
+
+    color: var(--text) !important;
+}
+
+[data-testid="stBaseButton-secondary"]:focus-visible,
+[data-testid="stBaseButton-primary"]:focus-visible {
+    outline:
+        2px solid var(--amber) !important;
+
+    outline-offset: 2px;
+}
+
+
+/* =========================================================
+   Text inputs
+   ========================================================= */
+
+.stTextInput {
+    width: 100%;
+}
+
+[data-testid="stTextInput"] {
+    margin-bottom: var(--space-3);
+}
+
+[data-testid="stTextInput"] label {
+    color: #bdbdbd !important;
+
+    font-size: 0.82rem !important;
+    font-weight: 500 !important;
+
+    margin-bottom: 6px !important;
+}
+
+.stTextInput input {
+    width: 100%;
+    box-sizing: border-box;
+
+    min-height: 44px;
+
+    padding:
+        10px
+        12px;
+
+    border-radius: 0 !important;
+
+    background: var(--surface-2) !important;
+
+    border:
+        1px solid
+        var(--border-strong) !important;
+
+    color: var(--text) !important;
+
+    font-size: 0.92rem !important;
+}
+
+.stTextInput input::placeholder {
+    color: #656565 !important;
+}
+
+.stTextInput input:focus {
+    border-color:
+        rgba(245, 166, 35, 0.70) !important;
+
+    box-shadow:
+        0 0 0 1px
+        rgba(245, 166, 35, 0.35) !important;
+}
+
+
+/* =========================================================
+   Number / select inputs for future screens
+   ========================================================= */
+
+.stNumberInput input,
+.stSelectbox div[data-baseweb="select"],
+.stMultiSelect div[data-baseweb="select"] {
+    border-radius: 0 !important;
+
+    background: var(--surface-2) !important;
+
+    border:
+        1px solid
+        var(--border-strong) !important;
+
+    color: var(--text) !important;
+}
+
+
+/* =========================================================
+   Divider
+   ========================================================= */
+
+hr {
+    border-color: var(--border) !important;
+
+    margin:
+        var(--space-4)
+        0 !important;
+}
+
+
+/* =========================================================
+   Authentication home layout
+   ========================================================= */
+
+.fv-home {
+    width: 100%;
+    max-width: 100%;
+
+    margin: 0 auto;
+}
+
+
+/* Left side */
+
+.fv-auth-left {
+    padding:
+        20px
+        12px
+        16px
+        0;
+}
+
+.fv-auth-kicker {
+    color: var(--amber);
+
+    font-size: 0.70rem;
+    line-height: 1.2;
+    font-weight: 700;
+
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+
+    margin-bottom: var(--space-5);
+}
+
+.fv-auth-title {
+    margin: 0;
+
+    font-size: clamp(3.2rem, 5.3vw, 5.6rem);
+    line-height: 0.91;
+
+    letter-spacing: -0.06em;
+
+    font-weight: 800;
+}
+
+.fv-auth-title-accent {
+    color: var(--amber);
+}
+
+.fv-auth-description {
+    max-width: 660px;
+
+    margin-top: var(--space-5);
+
+    color: #858585;
+
+    font-size: clamp(0.92rem, 1.2vw, 1.02rem);
+    line-height: 1.65;
+}
+
+.fv-auth-feature-list {
+    max-width: 640px;
+
+    margin-top: var(--space-7);
+}
+
+.fv-auth-feature {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: var(--space-4);
+
+    margin-bottom: var(--space-4);
+}
+
+.fv-auth-feature-index {
+    flex:
+        0
+        0
+        28px;
+
+    padding-top: 2px;
+
+    color: var(--amber);
+
+    font-size: 0.69rem;
+    line-height: 1.2;
+    font-weight: 700;
+
+    letter-spacing: 0.10em;
+}
+
+.fv-auth-feature-title {
+    color: var(--text);
+
+    font-size: 0.98rem;
+    line-height: 1.25;
+    font-weight: 700;
+
+    margin-bottom: 3px;
+}
+
+.fv-auth-feature-text {
+    color: #666;
+
+    font-size: 0.82rem;
+    line-height: 1.45;
+}
+
+
+/* Right side */
+
+.fv-auth-right {
+    width: 100%;
+}
+
+.fv-auth-card {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding:
+        20px
+        24px;
+
+    background:
+        rgba(15, 15, 15, 0.97);
+
+    border:
+        1px solid
+        var(--border);
+
+    box-shadow:
+        0 24px 60px
+        rgba(0, 0, 0, 0.26);
+}
+
+.fv-auth-card-label {
+    color: var(--amber);
+
+    font-size: 0.69rem;
+    line-height: 1.2;
+    font-weight: 700;
+
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+
+    margin-bottom: var(--space-2);
+}
+
+.fv-auth-card-title {
+    color: var(--text);
+
+    font-size: clamp(1.35rem, 2vw, 1.8rem);
+    line-height: 1.1;
+
+    font-weight: 800;
+
+    letter-spacing: -0.035em;
+
+    margin-bottom: 5px;
+}
+
+.fv-auth-card-subtitle {
+    color: #666;
+
+    font-size: 0.80rem;
+    line-height: 1.45;
+}
+
+.fv-auth-section-label {
+    color: var(--amber);
+
+    font-size: 0.69rem;
+    line-height: 1.2;
+
+    font-weight: 700;
+
+    letter-spacing: 0.15em;
+
+    text-transform: uppercase;
+
+    margin:
+        4px
+        0
+        12px;
+}
+
+.fv-auth-note {
+    color: #5f5f5f;
+
+    font-size: 0.74rem;
+    line-height: 1.5;
+
+    margin-top: var(--space-3);
+}
+
+
+/* =========================================================
+   Desktop density
+   ========================================================= */
+
+@media (min-width: 1025px) {
+
+    .block-container {
+        padding-top: 1.45rem !important;
+        padding-bottom: 1.5rem !important;
+    }
+
+    /*
+       Desktop auth density: give the left side more visual
+       presence without forcing a fixed viewport height.
+    */
+
+    .fv-auth-left {
+        padding-top: 22px;
+    }
+
+    .fv-auth-title {
+        font-size: clamp(3.45rem, 5.45vw, 5.85rem);
+    }
+
+    .fv-auth-description {
+        max-width: 700px;
+        margin-top: 20px;
+        font-size: 1.04rem;
+        line-height: 1.7;
+    }
+
+    .fv-auth-feature-list {
+        max-width: 690px;
+        margin-top: 34px;
+    }
+
+    .fv-auth-feature {
+        gap: 18px;
+        margin-bottom: 19px;
+    }
+
+    .fv-auth-feature-index {
+        flex-basis: 32px;
+        font-size: 0.72rem;
+        padding-top: 3px;
+    }
+
+    .fv-auth-feature-title {
+        font-size: 1.06rem;
+        line-height: 1.25;
+        margin-bottom: 4px;
+    }
+
+    .fv-auth-feature-text {
+        font-size: 0.88rem;
+        line-height: 1.5;
+    }
+
+    .fv-auth-card {
+        padding:
+            22px
+            24px;
+    }
+}
+
+
+/* =========================================================
+   Medium / tablet
+   ========================================================= */
+
+@media (min-width: 769px) and (max-width: 1024px) {
+
+    .block-container {
+        max-width: 960px;
+
+        padding-top: 12px !important;
+        padding-bottom: 24px !important;
+
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+    }
+
+    .fv-auth-title {
+        font-size: clamp(2.8rem, 6vw, 4.4rem);
+    }
+
+    .fv-auth-description {
+        max-width: 500px;
+    }
+
+    .fv-auth-feature-list {
+        margin-top: 22px;
+    }
+
+    .fv-auth-feature {
+        margin-bottom: 12px;
+    }
+
+    .fv-auth-card {
+        padding: 18px;
+    }
+}
+
+
+/* =========================================================
+   Mobile
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    .block-container {
+        max-width: 100%;
+
+        padding-top: 12px !important;
+        padding-bottom: 24px !important;
+
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
+
+    /*
+       IMPORTANT:
+       Only the outer auth two-column block becomes vertical.
+       The nested SIGN IN / CREATE ACCOUNT selector remains
+       horizontal so it stays compact on phones.
+    */
+
+    div[data-testid="stHorizontalBlock"]:has(
+        .fv-auth-left
+    ) {
+        flex-direction: column !important;
+
+        gap: 24px !important;
+    }
+
+    div[data-testid="stHorizontalBlock"]:has(
+        .fv-auth-left
+    ) > div[data-testid="stColumn"] {
+        width: 100% !important;
+
+        min-width: 100% !important;
+
+        flex:
+            1
+            1
+            100% !important;
+    }
+
+    .fv-auth-left {
+        padding:
+            4px
+            0
+            4px;
+    }
+
+    .fv-auth-title {
+        font-size: clamp(2.65rem, 12vw, 4rem);
+
+        line-height: 0.94;
+    }
+
+    .fv-auth-description {
+        margin-top: 14px;
+
+        font-size: 0.91rem;
+
+        line-height: 1.55;
+    }
+
+    .fv-auth-feature-list {
+        margin-top: 22px;
+    }
+
+    .fv-auth-feature {
+        gap: 10px;
+
+        margin-bottom: 14px;
+    }
+
+    .fv-auth-feature-index {
+        flex-basis: 24px;
+
+        font-size: 0.65rem;
+    }
+
+    .fv-auth-feature-title {
+        font-size: 0.91rem;
+    }
+
+    .fv-auth-feature-text {
+        font-size: 0.78rem;
+
+        line-height: 1.42;
+    }
+
+    .fv-auth-right {
+        padding-top: 0;
+    }
+
+    .fv-auth-card {
+        padding:
+            18px
+            16px;
+    }
+
+    .fv-auth-card-title {
+        font-size: 1.4rem;
+    }
+
+    .fv-auth-card-subtitle {
+        font-size: 0.78rem;
+    }
+
+    /*
+       Compact input rhythm.
+    */
+
+    [data-testid="stTextInput"] {
+        margin-bottom: 10px;
+    }
+
+    [data-testid="stTextInput"] label {
+        font-size: 0.78rem !important;
+    }
+
+    .stTextInput input {
+        min-height: 44px;
+
+        padding:
+            9px
+            11px;
+
+        font-size: 0.90rem !important;
+    }
+
+    /*
+       Compact buttons.
+    */
+
+    .stButton > button {
+        min-height: 44px;
+
+        padding:
+            9px
+            10px;
+
+        font-size: 0.77rem;
+    }
+
+    /*
+       Keep the SIGN IN / CREATE ACCOUNT selector compact
+       while allowing the main auth columns to stack.
+    */
+
+    div[data-testid="stHorizontalBlock"]:not(:has(.fv-auth-left)) {
+        gap: 10px !important;
+    }
+
+    /*
+       Compact divider between selector and form.
+    */
+
+    hr {
+        margin:
+            12px
+            0 !important;
+    }
+}
+
+
+/* =========================================================
+   Small phones
+   ========================================================= */
+
+@media (max-width: 390px) {
+
+    .block-container {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+
+        padding-top: 8px !important;
+        padding-bottom: 20px !important;
+    }
+
+    .fv-auth-kicker {
+        font-size: 0.63rem;
+
+        letter-spacing: 0.135em;
+
+        margin-bottom: 12px;
+    }
+
+    .fv-auth-title {
+        font-size: clamp(2.35rem, 13vw, 3rem);
+    }
+
+    .fv-accent-line {
+        width: 40px;
+        height: 3px;
+
+        margin:
+            12px
+            0
+            14px;
+    }
+
+    .fv-auth-description {
+        font-size: 0.84rem;
+
+        line-height: 1.5;
+    }
+
+    .fv-auth-feature-list {
+        margin-top: 18px;
+    }
+
+    .fv-auth-feature {
+        margin-bottom: 11px;
+    }
+
+    .fv-auth-feature-title {
+        font-size: 0.86rem;
+    }
+
+    .fv-auth-feature-text {
+        font-size: 0.74rem;
+    }
+
+    .fv-auth-card {
+        padding:
+            15px
+            13px;
+    }
+
+    .fv-auth-card-label {
+        font-size: 0.62rem;
+    }
+
+    .fv-auth-card-title {
+        font-size: 1.22rem;
+    }
+
+    .fv-auth-card-subtitle {
+        font-size: 0.73rem;
+    }
+
+    .fv-auth-section-label {
+        font-size: 0.62rem;
+
+        margin:
+            2px
+            0
+            9px;
+    }
+
+    [data-testid="stTextInput"] {
+        margin-bottom: 8px;
+    }
+
+    [data-testid="stTextInput"] label {
+        font-size: 0.74rem !important;
+    }
+
+    .stTextInput input {
+        min-height: 42px;
+
+        padding:
+            8px
+            10px;
+
+        font-size: 0.84rem !important;
+    }
+
+    .stButton > button {
+        min-height: 42px;
+
+        padding:
+            8px
+            7px;
+
+        font-size: 0.69rem;
+    }
+
+    div[data-testid="stHorizontalBlock"]:not(:has(.fv-auth-left)) {
+        gap: 8px !important;
+    }
+
+    hr {
+        margin:
+            10px
+            0 !important;
+    }
+
+    .fv-auth-note {
+        font-size: 0.68rem;
+    }
+}
+
+
+/* =========================================================
+   Very small phones
+   ========================================================= */
+
+@media (max-width: 320px) {
+
+    .block-container {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
+    .fv-auth-title {
+        font-size: 2.25rem;
+    }
+
+    .fv-auth-card {
+        padding:
+            13px
+            11px;
+    }
+
+    .stButton > button {
+        font-size: 0.64rem;
+    }
+}
+
+
+/* =========================================================
+   FITVISION — Modern authenticated product UI
+   Dashboard / Warm-up / AI Gym
+   ========================================================= */
+
+:root {
+    --fv-panel: rgba(17, 17, 17, 0.88);
+    --fv-panel-strong: rgba(21, 21, 21, 0.96);
+    --fv-panel-soft: rgba(255, 255, 255, 0.035);
+    --fv-line: rgba(255, 255, 255, 0.085);
+    --fv-line-strong: rgba(255, 255, 255, 0.14);
+    --fv-glow: rgba(245, 166, 35, 0.13);
+    --fv-radius: 20px;
+}
+
+/* Shared authenticated-screen shell */
+.block-container:has(.fv-dashboard-screen),
+.block-container:has(.fv-warmup-screen),
+.block-container:has(.fv-trainer-screen) {
+    max-width: 1380px !important;
+    padding-top: 28px !important;
+    padding-bottom: 48px !important;
+}
+
+.fv-screen-marker {
+    display: none !important;
+    height: 0 !important;
+    width: 0 !important;
+}
+
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
+
+.block-container:has(.fv-dashboard-screen) h1 {
+    font-size: clamp(3rem, 5.4vw, 5.2rem);
+    line-height: 0.94;
+    letter-spacing: -0.055em;
+}
+
+.block-container:has(.fv-dashboard-screen) h2 {
+    margin-top: 4px;
+    margin-bottom: 8px;
+    font-size: clamp(2rem, 3.2vw, 3rem);
+    letter-spacing: -0.045em;
+}
+
+.block-container:has(.fv-dashboard-screen) h3 {
+    color: var(--text);
+}
+
+.block-container:has(.fv-dashboard-screen) [data-testid="stCaptionContainer"] {
+    color: #696969 !important;
+    font-size: 0.78rem !important;
+}
+
+/* Dashboard sign-out */
+.block-container:has(.fv-dashboard-screen) [data-testid="stBaseButton-secondary"] {
+    min-height: 42px;
+    border-radius: 12px !important;
+    background: rgba(255,255,255,0.025) !important;
+    border-color: var(--fv-line) !important;
+    color: #a9a9a9 !important;
+    letter-spacing: 0.08em;
+    font-size: 0.72rem;
+}
+
+.block-container:has(.fv-dashboard-screen) [data-testid="stBaseButton-secondary"]:hover {
+    background: rgba(245,166,35,0.07) !important;
+    border-color: rgba(245,166,35,0.35) !important;
+    color: var(--text) !important;
+    transform: translateY(-1px);
+}
+
+/* Plan summary */
+.fv-plan-meta-grid {
+    display: grid;
+    grid-template-columns: 1.55fr 0.72fr 0.72fr;
+    gap: 12px;
+    margin: 28px 0 22px;
+}
+
+.fv-plan-meta-item {
+    position: relative;
+    min-height: 76px;
+    box-sizing: border-box;
+    padding: 16px 18px;
+    border: 1px solid var(--fv-line);
+    border-radius: 16px;
+    background: linear-gradient(
+        135deg,
+        rgba(255,255,255,0.045),
+        rgba(255,255,255,0.018)
+    );
+    box-shadow: 0 16px 45px rgba(0,0,0,0.14);
+    overflow: hidden;
+}
+
+.fv-plan-meta-item::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: var(--amber);
+    opacity: 0.8;
+}
+
+.fv-plan-meta-item span {
+    display: block;
+    margin-bottom: 7px;
+    color: #626262;
+    font-size: 0.63rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+}
+
+.fv-plan-meta-item strong {
+    display: block;
+    color: #e2e2e2;
+    font-size: 0.88rem;
+    font-weight: 650;
+    line-height: 1.25;
+}
+
+/* 28-day timeline */
+.block-container:has(.fv-dashboard-screen) [data-testid="stPills"] {
+    margin: 8px 0 24px;
+    padding: 7px;
+    border: 1px solid var(--fv-line);
+    border-radius: 18px;
+    background: rgba(11,11,11,0.72);
+    box-shadow: inset 0 1px rgba(255,255,255,0.025);
+}
+
+.block-container:has(.fv-dashboard-screen) [data-testid="stPills"] button {
+    min-height: 38px !important;
+    border-radius: 11px !important;
+    border: 1px solid transparent !important;
+    background: transparent !important;
+    color: #686868 !important;
+    font-size: 0.72rem !important;
+    font-weight: 750 !important;
+    transition: 140ms ease;
+}
+
+.block-container:has(.fv-dashboard-screen) [data-testid="stPills"] button:hover {
+    color: #cfcfcf !important;
+    background: rgba(255,255,255,0.045) !important;
+}
+
+.block-container:has(.fv-dashboard-screen) [data-testid="stPills"] button[aria-selected="true"] {
+    color: #111 !important;
+    background: var(--amber) !important;
+    box-shadow: 0 6px 22px rgba(245,166,35,0.18);
+}
+
+/* Selected day */
+.fv-selected-day-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin: 4px 0 26px;
+    padding: 17px 20px;
+    border: 1px solid var(--fv-line);
+    border-radius: 16px;
+    background: linear-gradient(
+        90deg,
+        rgba(245,166,35,0.07),
+        rgba(255,255,255,0.02)
+    );
+}
+
+.fv-selected-day-strip > div:first-child {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+}
+
+.fv-selected-day-label {
+    color: #676767;
+    font-size: 0.63rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+}
+
+.fv-selected-day-number {
+    color: #f0f0f0;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+}
+
+.fv-selected-day-date {
+    color: #666;
+    font-size: 0.75rem;
+}
+
+/* Exercise cards */
+.fv-exercise-card {
+    display: grid;
+    grid-template-columns: 48px minmax(0,1fr) auto;
+    align-items: center;
+    gap: 18px;
+    min-height: 82px;
+    box-sizing: border-box;
+    margin: 10px 0;
+    padding: 15px 18px;
+    border: 1px solid var(--fv-line);
+    border-radius: 18px;
+    background: linear-gradient(
+        135deg,
+        rgba(20,20,20,0.96),
+        rgba(14,14,14,0.86)
+    );
+    box-shadow: 0 15px 38px rgba(0,0,0,0.12);
+    transition: border-color 160ms ease, transform 160ms ease, background 160ms ease;
+}
+
+.fv-exercise-card:hover {
+    transform: translateY(-1px);
+    border-color: rgba(245,166,35,0.24);
+    background: linear-gradient(
+        135deg,
+        rgba(25,25,25,0.98),
+        rgba(16,16,16,0.92)
+    );
+}
+
+.fv-exercise-index {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: rgba(245,166,35,0.075);
+    border: 1px solid rgba(245,166,35,0.15);
+    color: var(--amber);
+    font-size: 0.68rem;
+    font-weight: 850;
+    letter-spacing: 0.08em;
+}
+
+.fv-exercise-name {
+    color: #ededed;
+    font-size: 1rem;
+    font-weight: 750;
+    line-height: 1.25;
+}
+
+.fv-exercise-target {
+    margin-top: 5px;
+    color: #656565;
+    font-size: 0.69rem;
+    font-weight: 750;
+    letter-spacing: 0.09em;
+}
+
+.fv-exercise-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--fv-line);
+    color: #777;
+    background: rgba(255,255,255,0.025);
+    font-size: 0.61rem;
+    font-weight: 850;
+    letter-spacing: 0.09em;
+    white-space: nowrap;
+}
+
+.fv-exercise-status.completed {
+    color: #9be1bb;
+    border-color: rgba(125,211,168,0.18);
+    background: rgba(125,211,168,0.07);
+}
+
+.fv-exercise-status.progress {
+    color: var(--amber);
+    border-color: rgba(245,166,35,0.2);
+    background: rgba(245,166,35,0.07);
+}
+
+.fv-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 10px currentColor;
+}
+
+/* Dashboard action area */
+.block-container:has(.fv-dashboard-screen) .stButton > button {
+    min-height: 52px;
+    border-radius: 14px !important;
+    font-size: 0.76rem;
+    letter-spacing: 0.08em;
+}
+
+.block-container:has(.fv-dashboard-screen) [data-testid="stBaseButton-primary"] {
+    box-shadow: 0 12px 32px rgba(245,166,35,0.13);
+}
+
+/* Warm-up intro on dashboard */
+.block-container:has(.fv-dashboard-screen) .fv-eyebrow {
+    margin-top: 6px;
+}
+
+/* =========================================================
+   WARM-UP SETUP
+   ========================================================= */
+
+.block-container:has(.fv-warmup-screen) h1 {
+    font-size: clamp(3rem, 5vw, 5rem);
+    line-height: 0.94;
+    letter-spacing: -0.055em;
+}
+
+.block-container:has(.fv-warmup-screen) .fv-muted {
+    max-width: 760px;
+    line-height: 1.65;
+}
+
+.block-container:has(.fv-warmup-screen) [data-testid="stSelectbox"],
+.block-container:has(.fv-warmup-screen) [data-testid="stNumberInput"] {
+    margin-top: 10px;
+    margin-bottom: 16px;
+}
+
+.block-container:has(.fv-warmup-screen) [data-testid="stSelectbox"] label,
+.block-container:has(.fv-warmup-screen) [data-testid="stNumberInput"] label {
+    color: #858585 !important;
+    font-size: 0.69rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase;
+}
+
+.block-container:has(.fv-warmup-screen) div[data-baseweb="select"] {
+    min-height: 50px;
+    border-radius: 14px !important;
+    background: rgba(18,18,18,0.95) !important;
+    border: 1px solid var(--fv-line-strong) !important;
+}
+
+.block-container:has(.fv-warmup-screen) input {
+    min-height: 48px !important;
+    border-radius: 14px !important;
+}
+
+.block-container:has(.fv-warmup-screen) [data-testid="stAlert"] {
+    border-radius: 14px !important;
+    border: 1px solid var(--fv-line) !important;
+    background: rgba(255,255,255,0.025) !important;
+}
+
+.block-container:has(.fv-warmup-screen) .fv-trainer-info-card {
+    box-sizing: border-box;
+    margin-top: 24px;
+    padding: 24px;
+    border: 1px solid var(--fv-line);
+    border-radius: 20px;
+    background: linear-gradient(
+        135deg,
+        rgba(245,166,35,0.055),
+        rgba(255,255,255,0.018)
+    );
+    box-shadow: 0 22px 60px rgba(0,0,0,0.16);
+}
+
+.block-container:has(.fv-warmup-screen) .fv-trainer-info-card h3 {
+    margin: 10px 0 6px;
+    font-size: 1.35rem;
+}
+
+.block-container:has(.fv-warmup-screen) .stButton > button {
+    min-height: 52px;
+    border-radius: 14px !important;
+    letter-spacing: 0.08em;
+}
+
+/* =========================================================
+   AI GYM / TRAINER
+   ========================================================= */
+
+.block-container:has(.fv-trainer-screen) {
+    max-width: 1450px !important;
+}
+
+.fv-trainer-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 26px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--fv-line);
+}
+
+.block-container:has(.fv-trainer-screen) .fv-trainer-title {
+    margin-top: 8px;
+    font-size: clamp(2.8rem, 5vw, 5rem);
+    line-height: 0.94;
+    letter-spacing: -0.06em;
+}
+
+.block-container:has(.fv-trainer-screen) .fv-trainer-header .fv-muted {
+    max-width: 700px;
+    margin-top: 12px;
+    line-height: 1.55;
+}
+
+.fv-trainer-section-label {
+    margin: 0 0 10px;
+    color: #626262;
+    font-size: 0.64rem;
+    font-weight: 850;
+    letter-spacing: 0.16em;
+}
+
+.block-container:has(.fv-trainer-screen) #fitvision-camera-shell {
+    border-radius: 22px;
+    border: 1px solid rgba(255,255,255,0.10);
+    box-shadow:
+        0 30px 80px rgba(0,0,0,0.38),
+        0 0 0 1px rgba(245,166,35,0.035);
+}
+
+.block-container:has(.fv-trainer-screen) .fv-trainer-info-card {
+    min-height: 100%;
+    box-sizing: border-box;
+    padding: 22px;
+    border: 1px solid var(--fv-line);
+    border-radius: 22px;
+    background: linear-gradient(
+        160deg,
+        rgba(20,20,20,0.96),
+        rgba(13,13,13,0.90)
+    );
+    box-shadow: 0 28px 75px rgba(0,0,0,0.20);
+}
+
+.block-container:has(.fv-trainer-screen) [data-testid="stMetric"] {
+    box-sizing: border-box;
+    min-height: 92px;
+    margin: 8px 0;
+    padding: 15px 16px;
+    border: 1px solid rgba(255,255,255,0.065);
+    border-radius: 16px;
+    background: rgba(255,255,255,0.025);
+}
+
+.block-container:has(.fv-trainer-screen) [data-testid="stMetricLabel"] {
+    color: #626262 !important;
+    font-size: 0.62rem !important;
+    font-weight: 850 !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase;
+}
+
+.block-container:has(.fv-trainer-screen) [data-testid="stMetricValue"] {
+    margin-top: 5px;
+    color: #f1f1f1 !important;
+    font-size: 1.55rem !important;
+    font-weight: 760 !important;
+    letter-spacing: -0.035em;
+}
+
+.block-container:has(.fv-trainer-screen) .fv-trainer-panel-title {
+    margin: 2px 0 14px;
+    color: #777;
+    font-size: 0.64rem;
+    font-weight: 850;
+    letter-spacing: 0.16em;
+}
+
+.block-container:has(.fv-trainer-screen) .fv-form-title {
+    margin-top: 24px;
+    padding-top: 22px;
+    border-top: 1px solid var(--fv-line);
+}
+
+.block-container:has(.fv-trainer-screen) .stButton > button {
+    min-height: 52px;
+    border-radius: 14px !important;
+    letter-spacing: 0.08em;
+}
+
+.block-container:has(.fv-trainer-screen) [data-testid="stBaseButton-secondary"] {
+    background: rgba(255,255,255,0.025) !important;
+    border-color: rgba(255,255,255,0.10) !important;
+}
+
+.block-container:has(.fv-trainer-screen) [data-testid="stBaseButton-secondary"]:hover {
+    border-color: rgba(245,166,35,0.35) !important;
+    background: rgba(245,166,35,0.055) !important;
+}
+
+/* =========================================================
+   Authenticated responsive behavior
+   ========================================================= */
+
+@media (max-width: 900px) {
+    .fv-plan-meta-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .fv-exercise-card {
+        grid-template-columns: 42px minmax(0,1fr);
+    }
+
+    .fv-exercise-status {
+        grid-column: 2;
+        justify-self: start;
+    }
+
+    .fv-selected-day-strip {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .block-container:has(.fv-trainer-screen) .fv-trainer-header {
+        margin-bottom: 18px;
+    }
+}
+
+@media (max-width: 768px) {
+    .block-container:has(.fv-dashboard-screen),
+    .block-container:has(.fv-warmup-screen),
+    .block-container:has(.fv-trainer-screen) {
+        padding-top: 18px !important;
+        padding-bottom: 30px !important;
+    }
+
+    .block-container:has(.fv-dashboard-screen) h1,
+    .block-container:has(.fv-warmup-screen) h1,
+    .block-container:has(.fv-trainer-screen) .fv-trainer-title {
+        font-size: clamp(2.45rem, 12vw, 4rem);
+    }
+
+    .fv-plan-meta-item {
+        min-height: 68px;
+    }
+
+    .fv-exercise-card {
+        gap: 12px;
+        padding: 13px;
+        border-radius: 15px;
+    }
+
+    .fv-exercise-name {
+        font-size: 0.92rem;
+    }
+
+    .fv-exercise-target {
+        font-size: 0.62rem;
+    }
+
+    .block-container:has(.fv-trainer-screen) .fv-trainer-info-card {
+        padding: 15px;
+        border-radius: 17px;
+    }
+
+    .block-container:has(.fv-trainer-screen) [data-testid="stMetric"] {
+        min-height: 78px;
+        padding: 12px;
+    }
+}
+
+
+/* =========================================================
+   FITVISION — Responsive hardening
+   Authenticated screens only
+   Designed for desktop, tablet, mobile and narrow phones.
+   ========================================================= */
+
+/* Prevent horizontal overflow from long labels, pills and cards. */
+.block-container:has(.fv-dashboard-screen),
+.block-container:has(.fv-warmup-screen),
+.block-container:has(.fv-trainer-screen) {
+    overflow-x: hidden !important;
+}
+
+.block-container:has(.fv-dashboard-screen) *,
+.block-container:has(.fv-warmup-screen) *,
+.block-container:has(.fv-trainer-screen) * {
+    box-sizing: border-box;
+}
+
+/* Long exercise names / emails should wrap instead of widening the page. */
+.block-container:has(.fv-dashboard-screen) .fv-exercise-name,
+.block-container:has(.fv-dashboard-screen) .fv-exercise-target,
+.block-container:has(.fv-dashboard-screen) .fv-plan-meta-item strong,
+.block-container:has(.fv-warmup-screen) .fv-trainer-info-card,
+.block-container:has(.fv-trainer-screen) .fv-trainer-title,
+.block-container:has(.fv-trainer-screen) .fv-muted {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+/* =========================================================
+   Large tablets / small laptops
+   ========================================================= */
+
+@media (max-width: 1100px) and (min-width: 769px) {
+
+    .block-container:has(.fv-dashboard-screen),
+    .block-container:has(.fv-warmup-screen),
+    .block-container:has(.fv-trainer-screen) {
+        padding-left: 22px !important;
+        padding-right: 22px !important;
+    }
+
+    .fv-plan-meta-grid {
+        grid-template-columns: 1.35fr 0.8fr 0.8fr;
+    }
+
+    .fv-exercise-card {
+        grid-template-columns: 44px minmax(0, 1fr) auto;
+        gap: 14px;
+    }
+
+    .block-container:has(.fv-trainer-screen) #fitvision-camera-shell {
+        max-width: 100%;
+    }
+}
+
+/* =========================================================
+   Tablet / mobile transition
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    /* Trainer camera + metrics become a true vertical stack. */
+    .block-container:has(.fv-trainer-screen)
+    div[data-testid="stHorizontalBlock"]:has(#fitvision-camera-shell) {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 18px !important;
+        width: 100% !important;
+    }
+
+    .block-container:has(.fv-trainer-screen)
+    div[data-testid="stHorizontalBlock"]:has(#fitvision-camera-shell)
+    > div[data-testid="stColumn"] {
+        width: 100% !important;
+        min-width: 100% !important;
+        flex: 1 1 100% !important;
+    }
+
+    .block-container:has(.fv-trainer-screen) #fitvision-camera-shell {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .block-container:has(.fv-trainer-screen) .fv-trainer-info-card {
+        min-height: 0;
+    }
+
+    /* Dashboard header actions become easier to tap. */
+    .block-container:has(.fv-dashboard-screen)
+    div[data-testid="stHorizontalBlock"]:has(.fv-dashboard-screen) {
+        width: 100%;
+    }
+
+    /* Long 28-day navigation scrolls horizontally instead of shrinking. */
+    .block-container:has(.fv-dashboard-screen) [data-testid="stPills"] {
+        width: 100%;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        scrollbar-width: thin;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .block-container:has(.fv-dashboard-screen) [data-testid="stPills"] > div {
+        min-width: max-content;
+    }
+}
+
+/* =========================================================
+   Phones
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    .block-container:has(.fv-dashboard-screen),
+    .block-container:has(.fv-warmup-screen),
+    .block-container:has(.fv-trainer-screen) {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding-top: 16px !important;
+        padding-bottom: 24px !important;
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+    }
+
+    /* -----------------------------
+       Dashboard
+       ----------------------------- */
+
+    .block-container:has(.fv-dashboard-screen) h1,
+    .block-container:has(.fv-warmup-screen) h1,
+    .block-container:has(.fv-trainer-screen) .fv-trainer-title {
+        font-size: clamp(2.15rem, 11vw, 3.5rem) !important;
+        line-height: 0.96 !important;
+    }
+
+    .block-container:has(.fv-dashboard-screen) h2 {
+        font-size: clamp(1.65rem, 8vw, 2.35rem) !important;
+        line-height: 1 !important;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .fv-plan-meta-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 9px;
+        margin-top: 20px;
+        margin-bottom: 16px;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .fv-plan-meta-item:first-child {
+        grid-column: 1 / -1;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .fv-plan-meta-item {
+        min-height: 64px;
+        padding: 13px 14px;
+        border-radius: 14px;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .fv-plan-meta-item span {
+        margin-bottom: 5px;
+        font-size: 0.57rem;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .fv-plan-meta-item strong {
+        font-size: 0.78rem;
+    }
+
+    .block-container:has(.fv-dashboard-screen) [data-testid="stPills"] {
+        margin-top: 5px;
+        margin-bottom: 18px;
+        padding: 5px;
+        border-radius: 14px;
+    }
+
+    .block-container:has(.fv-dashboard-screen) [data-testid="stPills"] button {
+        min-height: 36px !important;
+        padding: 0 10px !important;
+        font-size: 0.65rem !important;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .fv-selected-day-strip {
+        margin-bottom: 18px;
+        padding: 14px;
+        border-radius: 14px;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .fv-selected-day-strip > div:first-child {
+        flex-wrap: wrap;
+        gap: 7px 10px;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .fv-selected-day-label {
+        font-size: 0.56rem;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .fv-selected-day-number {
+        font-size: 0.86rem;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .fv-selected-day-date {
+        font-size: 0.69rem;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .fv-exercise-card {
+        grid-template-columns: 36px minmax(0, 1fr);
+        gap: 10px;
+        min-height: 0;
+        margin: 8px 0;
+        padding: 12px;
+        border-radius: 14px;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .fv-exercise-index {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        font-size: 0.61rem;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .fv-exercise-name {
+        font-size: 0.87rem;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .fv-exercise-target {
+        margin-top: 4px;
+        font-size: 0.58rem;
+        line-height: 1.35;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .fv-exercise-status {
+        grid-column: 2;
+        justify-self: start;
+        padding: 5px 8px;
+        font-size: 0.53rem;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .stButton > button {
+        min-height: 48px;
+        padding: 10px 12px;
+        font-size: 0.68rem;
+    }
+
+    /* -----------------------------
+       Warm-up setup
+       ----------------------------- */
+
+    .block-container:has(.fv-warmup-screen) .fv-muted {
+        font-size: 0.84rem;
+        line-height: 1.55;
+    }
+
+    .block-container:has(.fv-warmup-screen) [data-testid="stSelectbox"],
+    .block-container:has(.fv-warmup-screen) [data-testid="stNumberInput"] {
+        margin-bottom: 12px;
+    }
+
+    .block-container:has(.fv-warmup-screen) div[data-baseweb="select"] {
+        min-height: 46px;
+        border-radius: 12px !important;
+    }
+
+    .block-container:has(.fv-warmup-screen) input {
+        min-height: 46px !important;
+        border-radius: 12px !important;
+    }
+
+    .block-container:has(.fv-warmup-screen) [data-testid="stAlert"] {
+        padding: 10px 12px !important;
+        border-radius: 12px !important;
+        font-size: 0.78rem !important;
+    }
+
+    .block-container:has(.fv-warmup-screen) .fv-trainer-info-card {
+        margin-top: 16px;
+        padding: 16px;
+        border-radius: 16px;
+    }
+
+    /* START / BACK columns stack on phones. */
+    .block-container:has(.fv-warmup-screen)
+    div[data-testid="stHorizontalBlock"]:has(.fv-trainer-info-card) {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+
+    .block-container:has(.fv-warmup-screen)
+    div[data-testid="stHorizontalBlock"]:has(.fv-trainer-info-card)
+    > div[data-testid="stColumn"] {
+        width: 100% !important;
+        min-width: 100% !important;
+        flex: 1 1 100% !important;
+    }
+
+    .block-container:has(.fv-warmup-screen) .stButton > button {
+        min-height: 48px;
+        border-radius: 12px !important;
+    }
+
+    /* -----------------------------
+       Trainer
+       ----------------------------- */
+
+    .block-container:has(.fv-trainer-screen) .fv-trainer-header {
+        margin-bottom: 16px;
+        padding-bottom: 16px;
+    }
+
+    .block-container:has(.fv-trainer-screen) .fv-trainer-header .fv-muted {
+        margin-top: 9px;
+        font-size: 0.82rem;
+        line-height: 1.5;
+    }
+
+    .block-container:has(.fv-trainer-screen) .fv-trainer-section-label {
+        margin-bottom: 8px;
+        font-size: 0.58rem;
+    }
+
+    .block-container:has(.fv-trainer-screen) #fitvision-camera-shell {
+        width: 100% !important;
+        max-width: 100% !important;
+        aspect-ratio: 4 / 3 !important;
+        border-radius: 16px;
+    }
+
+    .block-container:has(.fv-trainer-screen) .fv-trainer-info-card {
+        width: 100%;
+        padding: 14px;
+        border-radius: 16px;
+    }
+
+    .block-container:has(.fv-trainer-screen) [data-testid="stMetric"] {
+        min-height: 70px;
+        margin: 6px 0;
+        padding: 10px 11px;
+        border-radius: 12px;
+    }
+
+    .block-container:has(.fv-trainer-screen) [data-testid="stMetricLabel"] {
+        font-size: 0.55rem !important;
+        letter-spacing: 0.09em !important;
+    }
+
+    .block-container:has(.fv-trainer-screen) [data-testid="stMetricValue"] {
+        font-size: 1.25rem !important;
+    }
+
+    .block-container:has(.fv-trainer-screen) .fv-trainer-panel-title {
+        margin-bottom: 10px;
+        font-size: 0.57rem;
+    }
+
+    .block-container:has(.fv-trainer-screen) .fv-form-title {
+        margin-top: 16px;
+        padding-top: 16px;
+    }
+
+    .block-container:has(.fv-trainer-screen) .stButton > button {
+        min-height: 48px;
+        border-radius: 12px !important;
+        font-size: 0.68rem;
+    }
+}
+
+/* =========================================================
+   Narrow phones
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+    .block-container:has(.fv-dashboard-screen),
+    .block-container:has(.fv-warmup-screen),
+    .block-container:has(.fv-trainer-screen) {
+        padding-left: 11px !important;
+        padding-right: 11px !important;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .fv-plan-meta-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .fv-plan-meta-item:first-child {
+        grid-column: auto;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .fv-plan-meta-item {
+        min-height: 60px;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .fv-exercise-card {
+        grid-template-columns: 32px minmax(0, 1fr);
+        padding: 11px;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .fv-exercise-index {
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .fv-exercise-name {
+        font-size: 0.82rem;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .fv-exercise-target {
+        font-size: 0.55rem;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .fv-exercise-status {
+        font-size: 0.49rem;
+    }
+
+    .block-container:has(.fv-warmup-screen) [data-testid="stSelectbox"] label,
+    .block-container:has(.fv-warmup-screen) [data-testid="stNumberInput"] label {
+        font-size: 0.59rem !important;
+    }
+
+    .block-container:has(.fv-trainer-screen) #fitvision-camera-shell {
+        border-radius: 13px;
+    }
+
+    .block-container:has(.fv-trainer-screen) #fitvision-camera-status {
+        top: 9px;
+        left: 9px;
+        padding: 6px 9px;
+        font-size: 10px;
+    }
+}
+
+/* =========================================================
+   Very narrow phones
+   ========================================================= */
+
+@media (max-width: 360px) {
+
+    .block-container:has(.fv-dashboard-screen),
+    .block-container:has(.fv-warmup-screen),
+    .block-container:has(.fv-trainer-screen) {
+        padding-left: 9px !important;
+        padding-right: 9px !important;
+    }
+
+    .block-container:has(.fv-dashboard-screen) h1,
+    .block-container:has(.fv-warmup-screen) h1,
+    .block-container:has(.fv-trainer-screen) .fv-trainer-title {
+        font-size: 2rem !important;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .fv-plan-meta-item {
+        padding: 11px 12px;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .fv-selected-day-strip {
+        padding: 12px;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .fv-exercise-card {
+        gap: 8px;
+        padding: 10px;
+    }
+
+    .block-container:has(.fv-dashboard-screen) .fv-exercise-status {
+        padding: 4px 7px;
+    }
+
+    .block-container:has(.fv-trainer-screen) [data-testid="stMetricValue"] {
+        font-size: 1.1rem !important;
+    }
+}
+
+/* =========================================================
+   Phone landscape — keep the camera useful without forcing
+   an excessively tall page.
+   ========================================================= */
+
+@media (max-width: 900px) and (orientation: landscape) {
+
+    .block-container:has(.fv-trainer-screen) #fitvision-camera-shell {
+        max-height: 70vh;
+        aspect-ratio: 16 / 9 !important;
+    }
+
+    .block-container:has(.fv-trainer-screen) .fv-trainer-header {
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+    }
+}
+
+
+/* =========================================================
+   FITVISION PRO PRODUCT UI
+   Authenticated experience
+   ========================================================= */
+
+:root {
+    --fv-pro-bg: #070A0B;
+    --fv-pro-panel: rgba(13,18,20,0.94);
+    --fv-pro-panel-2: rgba(17,24,27,0.90);
+    --fv-pro-surface: #11181B;
+    --fv-pro-surface-2: #172024;
+    --fv-pro-line: rgba(255,255,255,0.085);
+    --fv-pro-line-strong: rgba(255,255,255,0.15);
+    --fv-pro-text: #F5F7F8;
+    --fv-pro-muted: #8D979D;
+    --fv-pro-gold: #FFC928;
+    --fv-pro-gold-dark: #B58A00;
+    --fv-pro-green: #38E27B;
+    --fv-pro-red: #FF5A5F;
+    --fv-pro-cyan: #4AC7FF;
+    --fv-pro-radius: 18px;
+    --fv-pro-shadow: 0 24px 70px rgba(0,0,0,0.34);
+}
+
+/* -------- Authenticated shell background -------- */
+
+.block-container:has(.fv-dashboard-screen),
+.block-container:has(.fv-warmup-screen),
+.block-container:has(.fv-trainer-screen) {
+    max-width: 1480px !important;
+    width: 100% !important;
+    padding-top: 18px !important;
+    padding-right: 28px !important;
+    padding-bottom: 36px !important;
+    padding-left: 270px !important;
+}
+
+.block-container:has(.fv-dashboard-screen) ~ *,
+.block-container:has(.fv-warmup-screen) ~ *,
+.block-container:has(.fv-trainer-screen) ~ * {
+    pointer-events: auto;
+}
+
+.block-container:has(.fv-dashboard-screen),
+.block-container:has(.fv-warmup-screen),
+.block-container:has(.fv-trainer-screen) {
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif !important;
+}
+
+/* -------- Fixed sidebar -------- */
+
+.fv-app-sidebar {
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    z-index: 1000 !important;
+    width: 238px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 24px 16px 18px !important;
+    border-right: 1px solid rgba(255,255,255,0.065) !important;
+    background:
+        linear-gradient(
+            180deg,
+            rgba(9,13,14,0.99),
+            rgba(5,8,9,0.99)
+        ) !important;
+    box-shadow: 18px 0 60px rgba(0,0,0,0.18) !important;
+    overflow: hidden !important;
+}
+
+.fv-app-sidebar::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    pointer-events: none !important;
+    background:
+        radial-gradient(
+            circle at 20% 70%,
+            rgba(255,201,40,0.10),
+            transparent 28%
+        ) !important;
+}
+
+.fv-sidebar-brand {
+    position: relative !important;
+    z-index: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 82px !important;
+    margin-bottom: 16px !important;
+    border-bottom: 1px solid rgba(255,255,255,0.055) !important;
+}
+
+.fv-sidebar-logo {
+    width: 166px !important;
+    max-width: 100% !important;
+    height: auto !important;
+    object-fit: contain !important;
+    opacity: 0.98 !important;
+    filter: drop-shadow(0 8px 24px rgba(255,201,40,0.11)) !important;
+}
+
+.fv-side-nav {
+    position: relative !important;
+    z-index: 2 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 5px !important;
+    margin-top: 8px !important;
+}
+
+.fv-side-nav-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 13px !important;
+    min-height: 47px !important;
+    padding: 0 13px !important;
+    box-sizing: border-box !important;
+    border-radius: 12px !important;
+    border: 1px solid transparent !important;
+    color: #A0A8AC !important;
+    background: transparent !important;
+    font-size: 0.80rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.01em !important;
+    transition:
+        background 160ms ease,
+        color 160ms ease,
+        border-color 160ms ease,
+        transform 160ms ease !important;
+}
+
+.fv-side-nav-item.active {
+    color: #FFF4C4 !important;
+    background:
+        linear-gradient(
+            90deg,
+            rgba(255,201,40,0.16),
+            rgba(255,201,40,0.055)
+        ) !important;
+    border-color: rgba(255,201,40,0.24) !important;
+    box-shadow:
+        inset 3px 0 0 var(--fv-pro-gold),
+        0 10px 30px rgba(255,201,40,0.07) !important;
+}
+
+.fv-side-nav-item:not(.active):hover {
+    color: #E8ECEE !important;
+    background: rgba(255,255,255,0.035) !important;
+    border-color: rgba(255,255,255,0.065) !important;
+    transform: translateX(1px) !important;
+}
+
+.fv-side-nav-icon {
+    width: 25px !important;
+    text-align: center !important;
+    color: currentColor !important;
+    font-size: 1rem !important;
+}
+
+.fv-sidebar-spacer {
+    flex: 1 1 auto !important;
+}
+
+.fv-sidebar-motivation {
+    position: relative !important;
+    z-index: 1 !important;
+    min-height: 185px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-end !important;
+    margin: 0 -16px -18px !important;
+    padding: 28px 22px 24px !important;
+    background:
+        linear-gradient(
+            180deg,
+            rgba(7,10,11,0.15),
+            rgba(7,10,11,0.98)
+        ),
+        url("data:image/webp;base64,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") center/cover no-repeat !important;
+    border-top: 1px solid rgba(255,255,255,0.055) !important;
+}
+
+.fv-sidebar-motivation-kicker {
+    color: var(--fv-pro-gold) !important;
+    font-size: 0.58rem !important;
+    font-weight: 850 !important;
+    letter-spacing: 0.18em !important;
+    text-transform: uppercase !important;
+    margin-bottom: 11px !important;
+}
+
+.fv-sidebar-motivation-title {
+    color: #F7F9FA !important;
+    font-size: 1.18rem !important;
+    line-height: 0.96 !important;
+    font-weight: 900 !important;
+    letter-spacing: -0.035em !important;
+}
+
+.fv-sidebar-motivation-copy {
+    color: rgba(245,247,248,0.56) !important;
+    margin-top: 9px !important;
+    font-size: 0.69rem !important;
+    line-height: 1.45 !important;
+}
+
+.fv-mobile-brand {
+    display: none !important;
+}
+
+/* -------- Dashboard header -------- */
+
+.fv-dashboard-header {
+    position: relative !important;
+    min-height: 115px !important;
+    display: grid !important;
+    grid-template-columns: minmax(0,1fr) auto auto !important;
+    align-items: center !important;
+    gap: 20px !important;
+    padding: 22px 24px !important;
+    box-sizing: border-box !important;
+    border: 1px solid var(--fv-pro-line) !important;
+    border-radius: 20px !important;
+    background-color: #0B1012 !important;
+    background-position: center !important;
+    background-size: cover !important;
+    overflow: hidden !important;
+    box-shadow: var(--fv-pro-shadow) !important;
+}
+
+.fv-dashboard-header::after {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    pointer-events: none !important;
+    background:
+        linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255,201,40,0.025) 100%
+        ) !important;
+}
+
+.fv-dashboard-header-copy,
+.fv-dashboard-quote,
+.fv-dashboard-profile {
+    position: relative !important;
+    z-index: 2 !important;
+}
+
+.fv-dashboard-kicker {
+    color: var(--fv-pro-gold) !important;
+    margin-bottom: 7px !important;
+    font-size: 0.61rem !important;
+    font-weight: 850 !important;
+    letter-spacing: 0.18em !important;
+}
+
+.fv-dashboard-header h1 {
+    margin: 0 !important;
+    font-size: clamp(1.7rem, 3.4vw, 2.65rem) !important;
+    line-height: 1.02 !important;
+    letter-spacing: -0.052em !important;
+    font-weight: 850 !important;
+    color: #F7F9FA !important;
+}
+
+.fv-dashboard-header h1 span {
+    color: #FFE88A !important;
+}
+
+.fv-dashboard-header p {
+    margin: 7px 0 0 !important;
+    color: rgba(245,247,248,0.64) !important;
+    font-size: 0.80rem !important;
+}
+
+.fv-dashboard-quote {
+    color: rgba(255,255,255,0.70) !important;
+    font-size: 0.75rem !important;
+    line-height: 1.5 !important;
+    text-align: right !important;
+}
+
+.fv-dashboard-quote span {
+    color: var(--fv-pro-gold) !important;
+}
+
+.fv-dashboard-profile {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    min-width: 148px !important;
+    padding: 9px 11px !important;
+    box-sizing: border-box !important;
+    border: 1px solid var(--fv-pro-line) !important;
+    border-radius: 14px !important;
+    background: rgba(10,14,15,0.72) !important;
+}
+
+.fv-profile-avatar {
+    width: 37px !important;
+    height: 37px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    background:
+        linear-gradient(
+            145deg,
+            #6CB8FF,
+            #2D5B84
+        ) !important;
+    color: #F7FAFF !important;
+    font-weight: 800 !important;
+}
+
+.fv-dashboard-profile div:nth-child(2) {
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.fv-dashboard-profile strong {
+    color: #F2F5F6 !important;
+    font-size: 0.74rem !important;
+    font-weight: 800 !important;
+}
+
+.fv-dashboard-profile span {
+    color: #7F8A90 !important;
+    font-size: 0.61rem !important;
+    margin-top: 2px !important;
+}
+
+.fv-dashboard-profile b {
+    margin-left: auto !important;
+    color: #9FA8AD !important;
+}
+
+/* -------- Plan heading -------- */
+
+.fv-plan-heading {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 18px !important;
+    margin: 18px 0 10px !important;
+    padding: 18px 20px !important;
+    border: 1px solid var(--fv-pro-line) !important;
+    border-radius: 18px !important;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,0.035),
+            rgba(255,201,40,0.025)
+        ) !important;
+}
+
+.fv-plan-kicker {
+    color: var(--fv-pro-gold) !important;
+    font-size: 0.61rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.18em !important;
+}
+
+.fv-plan-heading h2 {
+    margin: 5px 0 2px !important;
+    color: #F4F7F8 !important;
+    font-size: clamp(1.08rem,2vw,1.45rem) !important;
+    line-height: 1.05 !important;
+    letter-spacing: -0.035em !important;
+}
+
+.fv-plan-heading p {
+    margin: 4px 0 0 !important;
+    color: var(--fv-pro-muted) !important;
+    font-size: 0.72rem !important;
+}
+
+.fv-plan-count {
+    display: flex !important;
+    align-items: baseline !important;
+    gap: 7px !important;
+    white-space: nowrap !important;
+    padding: 10px 14px !important;
+    border: 1px solid var(--fv-pro-line) !important;
+    border-radius: 13px !important;
+    background: rgba(8,11,12,0.64) !important;
+}
+
+.fv-plan-count span,
+.fv-plan-count small {
+    color: #79848A !important;
+    font-size: 0.58rem !important;
+    font-weight: 850 !important;
+    letter-spacing: 0.12em !important;
+}
+
+.fv-plan-count strong {
+    color: var(--fv-pro-gold) !important;
+    font-size: 1.1rem !important;
+}
+
+/* -------- Day rail -------- */
+
+.block-container:has(.fv-dashboard-screen) [data-testid="stPills"] {
+    margin: 0 0 16px !important;
+    padding: 7px !important;
+    border: 1px solid var(--fv-pro-line) !important;
+    border-radius: 17px !important;
+    background:
+        linear-gradient(
+            180deg,
+            rgba(14,20,22,0.96),
+            rgba(9,13,14,0.95)
+        ) !important;
+    box-shadow:
+        inset 0 1px rgba(255,255,255,0.025),
+        0 16px 44px rgba(0,0,0,0.20) !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scrollbar-width: thin !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+
+.block-container:has(.fv-dashboard-screen) [data-testid="stPills"] > div {
+    width: max-content !important;
+    min-width: max-content !important;
+}
+
+.block-container:has(.fv-dashboard-screen) [data-testid="stPills"] button {
+    min-width: 92px !important;
+    min-height: 52px !important;
+    padding: 0 12px !important;
+    margin: 0 !important;
+    border-radius: 13px !important;
+    border: 1px solid transparent !important;
+    box-shadow: none !important;
+    font-size: 0.65rem !important;
+    font-weight: 850 !important;
+    letter-spacing: 0.055em !important;
+    text-transform: uppercase !important;
+    white-space: nowrap !important;
+    transition:
+        transform 140ms ease,
+        box-shadow 140ms ease,
+        border-color 140ms ease !important;
+}
+
+.block-container:has(.fv-dashboard-screen) [data-testid="stPills"] button:hover {
+    transform: translateY(-1px) !important;
+}
+
+.block-container:has(.fv-dashboard-screen) [data-testid="stPills"] button[aria-selected="true"] {
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,201,40,0.20),
+            rgba(255,201,40,0.08)
+        ) !important;
+    border-color: rgba(255,201,40,0.74) !important;
+    color: #FFF3B1 !important;
+    box-shadow:
+        0 0 0 1px rgba(255,201,40,0.09),
+        0 8px 24px rgba(255,201,40,0.10) !important;
+}
+
+/* -------- Dashboard main grid -------- */
+
+.fv-dashboard-grid {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.45fr) minmax(230px, 0.78fr) minmax(220px, 0.78fr) !important;
+    gap: 13px !important;
+    align-items: stretch !important;
+}
+
+.fv-workout-panel,
+.fv-strength-card,
+.fv-week-card,
+.fv-quote-card {
+    border: 1px solid var(--fv-pro-line) !important;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(17,24,27,0.96),
+            rgba(10,14,15,0.94)
+        ) !important;
+    box-shadow: var(--fv-pro-shadow) !important;
+}
+
+.fv-workout-panel {
+    min-height: 410px !important;
+    padding: 15px !important;
+    box-sizing: border-box !important;
+    border-radius: 18px !important;
+}
+
+.fv-workout-panel-head {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    padding: 3px 4px 12px !important;
+}
+
+.fv-workout-panel-head > div:first-child > span {
+    color: var(--fv-pro-gold) !important;
+    font-size: 0.56rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.16em !important;
+}
+
+.fv-workout-panel-head h3 {
+    margin: 4px 0 0 !important;
+    color: #F6F8F9 !important;
+    font-size: 1.03rem !important;
+    letter-spacing: -0.025em !important;
+}
+
+.fv-workout-duration {
+    color: #879197 !important;
+    font-size: 0.68rem !important;
+    white-space: nowrap !important;
+}
+
+.fv-workout-duration span {
+    color: var(--fv-pro-gold) !important;
+}
+
+.fv-exercise-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 7px !important;
+}
+
+.fv-pro-exercise-card {
+    display: grid !important;
+    grid-template-columns: 34px 48px minmax(0,1fr) auto !important;
+    align-items: center !important;
+    gap: 10px !important;
+    min-height: 57px !important;
+    padding: 7px 9px !important;
+    box-sizing: border-box !important;
+    border: 1px solid rgba(255,255,255,0.07) !important;
+    border-radius: 13px !important;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,0.032),
+            rgba(255,255,255,0.012)
+        ) !important;
+}
+
+.fv-pro-exercise-card.current {
+    border-color: rgba(255,201,40,0.22) !important;
+    box-shadow:
+        inset 2px 0 var(--fv-pro-gold),
+        0 8px 18px rgba(255,201,40,0.04) !important;
+}
+
+.fv-pro-exercise-index {
+    width: 31px !important;
+    height: 31px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 10px !important;
+    color: #DCE2E5 !important;
+    background: rgba(255,255,255,0.035) !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    font-size: 0.63rem !important;
+    font-weight: 900 !important;
+}
+
+.fv-pro-exercise-card.current .fv-pro-exercise-index {
+    background: rgba(255,201,40,0.11) !important;
+    color: #FFE37A !important;
+    border-color: rgba(255,201,40,0.20) !important;
+}
+
+.fv-pro-exercise-image {
+    width: 48px !important;
+    height: 42px !important;
+    overflow: hidden !important;
+    border-radius: 10px !important;
+    background: #0B1012 !important;
+    border: 1px solid rgba(255,255,255,0.06) !important;
+}
+
+.fv-pro-exercise-image img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+}
+
+.fv-pro-exercise-copy {
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.fv-pro-exercise-copy strong {
+    color: #F0F4F5 !important;
+    font-size: 0.78rem !important;
+    font-weight: 800 !important;
+    line-height: 1.15 !important;
+}
+
+.fv-pro-exercise-copy span {
+    margin-top: 3px !important;
+    color: #77838A !important;
+    font-size: 0.60rem !important;
+}
+
+.fv-pro-exercise-status {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 5px !important;
+    min-width: 82px !important;
+    padding: 6px 8px !important;
+    border-radius: 999px !important;
+    border: 1px solid rgba(255,255,255,0.075) !important;
+    font-size: 0.57rem !important;
+    font-weight: 900 !important;
+    white-space: nowrap !important;
+}
+
+.fv-pro-exercise-status.done {
+    color: var(--fv-pro-green) !important;
+    background: rgba(56,226,123,0.065) !important;
+    border-color: rgba(56,226,123,0.16) !important;
+}
+
+.fv-pro-exercise-status.progress {
+    color: var(--fv-pro-gold) !important;
+    background: rgba(255,201,40,0.06) !important;
+    border-color: rgba(255,201,40,0.17) !important;
+}
+
+.fv-pro-exercise-status.pending {
+    color: #8A949A !important;
+}
+
+/* -------- Strength card -------- */
+
+.fv-strength-card {
+    position: relative !important;
+    min-height: 410px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    border-radius: 18px !important;
+}
+
+.fv-strength-card > img {
+    width: 100% !important;
+    height: 100% !important;
+    display: block !important;
+    object-fit: cover !important;
+    object-position: center !important;
+}
+
+.fv-strength-card::after {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    background:
+        linear-gradient(
+            180deg,
+            rgba(4,7,8,0.15),
+            rgba(4,7,8,0.50) 55%,
+            rgba(4,7,8,0.88)
+        ) !important;
+}
+
+.fv-strength-overlay {
+    position: absolute !important;
+    left: 18px !important;
+    right: 18px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    z-index: 2 !important;
+    text-align: center !important;
+}
+
+.fv-strength-overlay span {
+    display: block !important;
+    color: rgba(255,255,255,0.62) !important;
+    font-size: 0.55rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.18em !important;
+}
+
+.fv-strength-overlay strong {
+    display: block !important;
+    margin-top: 8px !important;
+    color: #F4F6F7 !important;
+    font-size: 1.55rem !important;
+    line-height: 0.94 !important;
+    font-weight: 900 !important;
+    letter-spacing: -0.055em !important;
+}
+
+.fv-strength-overlay em {
+    color: var(--fv-pro-gold) !important;
+    font-style: normal !important;
+}
+
+.fv-strength-overlay i {
+    display: block !important;
+    width: 44px !important;
+    height: 3px !important;
+    margin: 14px auto 0 !important;
+    background: var(--fv-pro-gold) !important;
+    box-shadow: 0 0 16px rgba(255,201,40,0.42) !important;
+}
+
+.fv-strength-stats {
+    position: absolute !important;
+    left: 10px !important;
+    right: 10px !important;
+    bottom: 10px !important;
+    z-index: 3 !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 7px !important;
+}
+
+.fv-strength-stats > div {
+    display: grid !important;
+    grid-template-columns: 22px 1fr !important;
+    grid-template-rows: auto auto !important;
+    column-gap: 6px !important;
+    padding: 8px 9px !important;
+    box-sizing: border-box !important;
+    border: 1px solid rgba(255,255,255,0.10) !important;
+    border-radius: 11px !important;
+    background: rgba(6,9,10,0.72) !important;
+    backdrop-filter: blur(8px) !important;
+}
+
+.fv-strength-stats b {
+    grid-row: 1 / span 2 !important;
+    color: var(--fv-pro-gold) !important;
+}
+
+.fv-strength-stats strong {
+    color: #F8FAFB !important;
+    font-size: 0.88rem !important;
+}
+
+.fv-strength-stats span {
+    color: #7D888E !important;
+    font-size: 0.52rem !important;
+}
+
+/* -------- Right dashboard column -------- */
+
+.fv-dashboard-side {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 13px !important;
+}
+
+.fv-week-card {
+    border-radius: 18px !important;
+    padding: 14px !important;
+}
+
+.fv-side-card-title {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin-bottom: 11px !important;
+    color: #E9EEF0 !important;
+    font-size: 0.72rem !important;
+    font-weight: 850 !important;
+    letter-spacing: 0.035em !important;
+}
+
+.fv-side-card-title span {
+    color: var(--fv-pro-gold) !important;
+}
+
+.fv-side-stat-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3,1fr) !important;
+    gap: 7px !important;
+}
+
+.fv-side-stat-grid > div {
+    min-width: 0 !important;
+    min-height: 90px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    padding: 9px !important;
+    box-sizing: border-box !important;
+    border: 1px solid rgba(255,255,255,0.065) !important;
+    border-radius: 11px !important;
+    background: rgba(255,255,255,0.02) !important;
+}
+
+.fv-side-stat-grid > div > span {
+    color: var(--fv-pro-gold) !important;
+    font-size: 0.84rem !important;
+}
+
+.fv-side-stat-grid strong {
+    margin-top: 4px !important;
+    color: #F6F9FA !important;
+    font-size: 1.10rem !important;
+    font-weight: 850 !important;
+}
+
+.fv-side-stat-grid small {
+    margin-top: 2px !important;
+    color: #7D888E !important;
+    font-size: 0.52rem !important;
+}
+
+.fv-quote-card {
+    position: relative !important;
+    min-height: 150px !important;
+    padding: 18px !important;
+    box-sizing: border-box !important;
+    border-radius: 18px !important;
+    overflow: hidden !important;
+}
+
+.fv-quote-card::after {
+    content: "" !important;
+    position: absolute !important;
+    right: -60px !important;
+    top: -60px !important;
+    width: 150px !important;
+    height: 150px !important;
+    border-radius: 50% !important;
+    background: rgba(255,201,40,0.08) !important;
+    filter: blur(18px) !important;
+}
+
+.fv-quote-mark {
+    color: #6D7A81 !important;
+    font-size: 2.0rem !important;
+    font-family: Georgia, serif !important;
+    line-height: 0.8 !important;
+}
+
+.fv-quote-card p {
+    position: relative !important;
+    z-index: 2 !important;
+    max-width: 230px !important;
+    margin: 9px 0 0 !important;
+    color: #F1F4F5 !important;
+    font-family: Georgia, serif !important;
+    font-size: 0.93rem !important;
+    font-style: italic !important;
+    line-height: 1.4 !important;
+}
+
+.fv-quote-line {
+    width: 34px !important;
+    height: 3px !important;
+    margin-top: 15px !important;
+    background: var(--fv-pro-gold) !important;
+}
+
+/* -------- Bottom CTA cards -------- */
+
+.fv-next-up-card {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    min-height: 62px !important;
+    padding: 8px 12px !important;
+    box-sizing: border-box !important;
+    border: 1px solid var(--fv-pro-line) !important;
+    border-radius: 14px !important;
+    background: rgba(255,255,255,0.025) !important;
+}
+
+.fv-next-up-image {
+    width: 52px !important;
+    height: 48px !important;
+    overflow: hidden !important;
+    border-radius: 10px !important;
+    flex: 0 0 auto !important;
+}
+
+.fv-next-up-image img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+}
+
+.fv-next-up-card > div:last-child {
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.fv-next-up-card span {
+    color: var(--fv-pro-gold) !important;
+    font-size: 0.53rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.14em !important;
+}
+
+.fv-next-up-card strong {
+    color: #EDF1F2 !important;
+    font-size: 0.79rem !important;
+    margin-top: 3px !important;
+}
+
+.fv-next-up-card small {
+    color: #77838A !important;
+    font-size: 0.58rem !important;
+    margin-top: 2px !important;
+}
+
+.fv-complete-banner {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin-top: 14px !important;
+    padding: 14px 16px !important;
+    border: 1px solid rgba(56,226,123,0.18) !important;
+    border-radius: 15px !important;
+    background: rgba(56,226,123,0.055) !important;
+}
+
+.fv-complete-banner > span {
+    width: 34px !important;
+    height: 34px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    color: #07130C !important;
+    background: var(--fv-pro-green) !important;
+    font-weight: 950 !important;
+}
+
+.fv-complete-banner strong {
+    display: block !important;
+    color: #DFFFEA !important;
+    font-size: 0.82rem !important;
+}
+
+.fv-complete-banner small {
+    display: block !important;
+    margin-top: 2px !important;
+    color: #7EA68D !important;
+    font-size: 0.63rem !important;
+}
+
+/* -------- Dashboard Streamlit action buttons -------- */
+
+.block-container:has(.fv-dashboard-screen) .stButton > button {
+    min-height: 48px !important;
+    border-radius: 13px !important;
+    font-size: 0.71rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.09em !important;
+}
+
+.block-container:has(.fv-dashboard-screen)
+[data-testid="stBaseButton-primary"] {
+    background:
+        linear-gradient(
+            180deg,
+            #FFD447,
+            #F2B800
+        ) !important;
+    border-color: #FFD447 !important;
+    color: #0A0B0B !important;
+    box-shadow:
+        0 12px 28px rgba(255,201,40,0.18) !important;
+}
+
+.block-container:has(.fv-dashboard-screen)
+[data-testid="stBaseButton-secondary"] {
+    background: rgba(255,255,255,0.025) !important;
+    border-color: rgba(255,255,255,0.10) !important;
+    color: #AAB2B7 !important;
+}
+
+.block-container:has(.fv-dashboard-screen)
+[data-testid="stBaseButton-secondary"]:hover {
+    border-color: rgba(255,201,40,0.35) !important;
+    color: #F2F5F6 !important;
+}
+
+/* =========================================================
+   WARM-UP
+   ========================================================= */
+
+.fv-warmup-hero {
+    display: grid !important;
+    grid-template-columns: minmax(0,1fr) minmax(280px,0.65fr) !important;
+    gap: 16px !important;
+    align-items: stretch !important;
+    margin-bottom: 14px !important;
+}
+
+.fv-warmup-hero > div:first-child {
+    padding: 17px 20px !important;
+    border: 1px solid var(--fv-pro-line) !important;
+    border-radius: 18px !important;
+    background:
+        linear-gradient(
+            140deg,
+            rgba(255,201,40,0.05),
+            rgba(255,255,255,0.02)
+        ) !important;
+}
+
+.fv-warmup-hero h1 {
+    margin: 7px 0 5px !important;
+    color: #F5F8F9 !important;
+    font-size: clamp(1.8rem,3.6vw,3.0rem) !important;
+    line-height: 0.98 !important;
+    letter-spacing: -0.055em !important;
+}
+
+.fv-warmup-hero p {
+    max-width: 650px !important;
+    margin: 6px 0 0 !important;
+    color: var(--fv-pro-muted) !important;
+    font-size: 0.76rem !important;
+    line-height: 1.55 !important;
+}
+
+.fv-warmup-tip {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 17px !important;
+    border: 1px solid rgba(255,201,40,0.14) !important;
+    border-radius: 18px !important;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,201,40,0.08),
+            rgba(255,255,255,0.025)
+        ) !important;
+}
+
+.fv-warmup-tip-icon {
+    width: 40px !important;
+    height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 12px !important;
+    background: rgba(255,201,40,0.10) !important;
+    font-size: 1.15rem !important;
+}
+
+.fv-warmup-tip strong {
+    display: block !important;
+    color: #EEF2F3 !important;
+    font-size: 0.77rem !important;
+}
+
+.fv-warmup-tip span {
+    display: block !important;
+    margin-top: 4px !important;
+    color: #78838A !important;
+    font-size: 0.60rem !important;
+    line-height: 1.45 !important;
+}
+
+.fv-warmup-section-title {
+    margin: 12px 0 8px !important;
+    color: #EAF0F1 !important;
+    font-size: 0.76rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.03em !important;
+}
+
+.fv-category-pills {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 7px !important;
+    margin-bottom: 9px !important;
+}
+
+.fv-category-pills span {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 31px !important;
+    padding: 0 14px !important;
+    border-radius: 999px !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    background: rgba(255,255,255,0.025) !important;
+    color: #7F8A90 !important;
+    font-size: 0.58rem !important;
+    font-weight: 800 !important;
+}
+
+.fv-category-pills span.active {
+    color: #0A0C0C !important;
+    background: var(--fv-pro-gold) !important;
+    border-color: var(--fv-pro-gold) !important;
+}
+
+/* Interactive warm-up exercise cards.
+   The Streamlit button sits over the visual marker and receives
+   the real click, so exercise selection remains functional. */
+
+.fv-warmup-card-marker {
+    position: relative !important;
+    min-height: 126px !important;
+    overflow: hidden !important;
+    border-radius: 15px !important;
+    border: 1px solid rgba(255,255,255,0.075) !important;
+    background: #0B1012 !important;
+    margin-bottom: 0 !important;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.15) !important;
+}
+
+.fv-warmup-card-marker.selected {
+    border-color: rgba(255,201,40,0.72) !important;
+    box-shadow:
+        0 0 0 1px rgba(255,201,40,0.16),
+        0 12px 28px rgba(255,201,40,0.09) !important;
+}
+
+.fv-warmup-card-marker img {
+    width: 100% !important;
+    height: 126px !important;
+    object-fit: cover !important;
+    display: block !important;
+}
+
+.fv-warmup-card-marker::after {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    background:
+        linear-gradient(
+            180deg,
+            rgba(6,8,9,0.03),
+            rgba(6,8,9,0.78)
+        ) !important;
+    pointer-events: none !important;
+}
+
+.fv-warmup-card-caption {
+    position: absolute !important;
+    left: 10px !important;
+    right: 10px !important;
+    bottom: 9px !important;
+    z-index: 2 !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.fv-warmup-card-caption strong {
+    color: #F1F4F5 !important;
+    font-size: 0.66rem !important;
+    font-weight: 850 !important;
+}
+
+.fv-warmup-card-caption span {
+    margin-top: 3px !important;
+    color: #A7B0B4 !important;
+    font-size: 0.49rem !important;
+    font-weight: 850 !important;
+    letter-spacing: 0.09em !important;
+}
+
+.block-container:has(.fv-warmup-screen)
+div[data-testid="stColumn"]:has(.fv-warmup-card-marker) {
+    position: relative !important;
+}
+
+.block-container:has(.fv-warmup-screen)
+div[data-testid="stColumn"]:has(.fv-warmup-card-marker)
+.stButton {
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 5 !important;
+    width: 100% !important;
+    height: 126px !important;
+}
+
+.block-container:has(.fv-warmup-screen)
+div[data-testid="stColumn"]:has(.fv-warmup-card-marker)
+.stButton > button {
+    width: 100% !important;
+    height: 126px !important;
+    min-height: 126px !important;
+    opacity: 0 !important;
+    cursor: pointer !important;
+}
+
+.fv-warmup-config {
+    margin: 12px 0 8px !important;
+}
+
+.fv-warmup-selected {
+    display: flex !important;
+    align-items: center !important;
+    gap: 13px !important;
+    padding: 12px !important;
+    border: 1px solid var(--fv-pro-line) !important;
+    border-radius: 15px !important;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,201,40,0.06),
+            rgba(255,255,255,0.018)
+        ) !important;
+}
+
+.fv-warmup-selected img {
+    width: 58px !important;
+    height: 58px !important;
+    border-radius: 11px !important;
+    object-fit: cover !important;
+    border: 1px solid rgba(255,255,255,0.09) !important;
+}
+
+.fv-warmup-selected > div {
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.fv-warmup-selected span {
+    color: var(--fv-pro-gold) !important;
+    font-size: 0.53rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.14em !important;
+}
+
+.fv-warmup-selected strong {
+    color: #EEF3F4 !important;
+    font-size: 0.89rem !important;
+    margin-top: 4px !important;
+}
+
+.fv-warmup-selected small {
+    color: #748087 !important;
+    font-size: 0.58rem !important;
+    margin-top: 3px !important;
+}
+
+.fv-warmup-summary-card {
+    height: 100% !important;
+    min-height: 146px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    padding: 18px !important;
+    border: 1px solid var(--fv-pro-line) !important;
+    border-radius: 16px !important;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,0.03),
+            rgba(255,255,255,0.012)
+        ) !important;
+}
+
+.fv-warmup-summary-card span {
+    color: var(--fv-pro-gold) !important;
+    font-size: 0.55rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.14em !important;
+}
+
+.fv-warmup-summary-card strong {
+    margin-top: 6px !important;
+    color: #F3F6F7 !important;
+    font-size: 1.03rem !important;
+}
+
+.fv-warmup-summary-card small {
+    margin-top: 6px !important;
+    color: #7E8990 !important;
+    font-size: 0.59rem !important;
+}
+
+.block-container:has(.fv-warmup-screen)
+[data-testid="stNumberInput"] {
+    margin-top: 0 !important;
+    margin-bottom: 10px !important;
+}
+
+.block-container:has(.fv-warmup-screen)
+[data-testid="stNumberInput"] label {
+    color: #879197 !important;
+    font-size: 0.57rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+}
+
+.block-container:has(.fv-warmup-screen)
+[data-testid="stNumberInput"] input {
+    min-height: 46px !important;
+    border-radius: 12px !important;
+    background: rgba(17,24,27,0.94) !important;
+}
+
+.block-container:has(.fv-warmup-screen) .stButton > button {
+    min-height: 48px !important;
+    border-radius: 13px !important;
+    font-size: 0.70rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.08em !important;
+}
+
+/* =========================================================
+   TRAINER
+   ========================================================= */
+
+.fv-session-header {
+    padding: 4px 0 !important;
+}
+
+.fv-session-brand {
+    color: var(--fv-pro-gold) !important;
+    font-size: 0.55rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.17em !important;
+}
+
+.fv-session-title {
+    margin-top: 4px !important;
+    color: #F2F5F6 !important;
+    font-size: 1.08rem !important;
+    font-weight: 850 !important;
+    letter-spacing: -0.025em !important;
+}
+
+.fv-session-subtitle {
+    margin-top: 2px !important;
+    color: #7B868C !important;
+    font-size: 0.62rem !important;
+}
+
+.fv-session-live-badge {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 7px !important;
+    min-height: 33px !important;
+    padding: 0 12px !important;
+    box-sizing: border-box !important;
+    border: 1px solid rgba(56,226,123,0.17) !important;
+    border-radius: 999px !important;
+    background: rgba(56,226,123,0.05) !important;
+    color: #9AF2BC !important;
+    font-size: 0.57rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.10em !important;
+}
+
+.fv-session-live-badge span,
+.fv-live-dot {
+    width: 7px !important;
+    height: 7px !important;
+    border-radius: 50% !important;
+    background: var(--fv-pro-green) !important;
+    box-shadow: 0 0 12px rgba(56,226,123,0.7) !important;
+}
+
+.block-container:has(.fv-trainer-screen) .stButton > button {
+    min-height: 42px !important;
+    border-radius: 12px !important;
+    font-size: 0.65rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.07em !important;
+}
+
+.block-container:has(.fv-trainer-screen)
+[data-testid="stBaseButton-primary"] {
+    background:
+        linear-gradient(
+            180deg,
+            #FF666B,
+            #F3464D
+        ) !important;
+    color: #FFF !important;
+    border-color: #FF666B !important;
+    box-shadow:
+        0 11px 26px rgba(255,90,95,0.16) !important;
+}
+
+.fv-trainer-hero {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 16px !important;
+    margin: 10px 0 12px !important;
+    padding: 13px 15px !important;
+    border: 1px solid var(--fv-pro-line) !important;
+    border-radius: 15px !important;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,201,40,0.05),
+            rgba(255,255,255,0.018)
+        ) !important;
+}
+
+.fv-trainer-kicker {
+    color: var(--fv-pro-gold) !important;
+    font-size: 0.53rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.16em !important;
+}
+
+.fv-trainer-hero h1 {
+    margin: 4px 0 0 !important;
+    color: #F4F7F8 !important;
+    font-size: 1.40rem !important;
+    line-height: 1 !important;
+    letter-spacing: -0.038em !important;
+}
+
+.fv-trainer-hero p {
+    margin: 5px 0 0 !important;
+    color: #7C878D !important;
+    font-size: 0.63rem !important;
+    line-height: 1.4 !important;
+}
+
+.fv-trainer-target-chip {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    padding: 8px 11px !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    border-radius: 11px !important;
+    background: rgba(255,255,255,0.025) !important;
+}
+
+.fv-trainer-target-chip span {
+    color: #7C878D !important;
+    font-size: 0.50rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.13em !important;
+}
+
+.fv-trainer-target-chip strong {
+    margin-top: 3px !important;
+    color: #EEF2F3 !important;
+    font-size: 0.76rem !important;
+}
+
+.fv-live-camera-heading {
+    display: flex !important;
+    align-items: center !important;
+    gap: 7px !important;
+    margin: 1px 0 7px !important;
+    color: #A3ACB1 !important;
+    font-size: 0.56rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.14em !important;
+}
+
+.block-container:has(.fv-trainer-screen)
+#fitvision-camera-shell {
+    width: 100% !important;
+    max-width: none !important;
+    border-radius: 19px !important;
+    border: 1px solid rgba(255,255,255,0.09) !important;
+    box-shadow:
+        0 26px 70px rgba(0,0,0,0.34),
+        0 0 0 1px rgba(255,201,40,0.02) !important;
+    overflow: hidden !important;
+}
+
+.fv-live-heading {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+    margin-bottom: 8px !important;
+}
+
+.fv-live-kicker {
+    color: #A6B0B5 !important;
+    font-size: 0.60rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.14em !important;
+}
+
+.fv-live-subtitle {
+    margin-top: 2px !important;
+    color: #657177 !important;
+    font-size: 0.57rem !important;
+}
+
+.fv-live-status {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    color: #96F5B6 !important;
+    font-size: 0.52rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.11em !important;
+}
+
+.fv-live-status span {
+    width: 6px !important;
+    height: 6px !important;
+    border-radius: 50% !important;
+    background: var(--fv-pro-green) !important;
+    box-shadow: 0 0 10px rgba(56,226,123,0.7) !important;
+}
+
+.fv-progress-stat-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3,1fr) !important;
+    gap: 7px !important;
+}
+
+.fv-progress-stat {
+    min-height: 86px !important;
+    padding: 11px !important;
+    box-sizing: border-box !important;
+    border: 1px solid rgba(255,255,255,0.07) !important;
+    border-radius: 13px !important;
+    background:
+        linear-gradient(
+            140deg,
+            rgba(255,255,255,0.035),
+            rgba(255,255,255,0.014)
+        ) !important;
+}
+
+.fv-progress-stat-label {
+    color: #748087 !important;
+    font-size: 0.51rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.10em !important;
+}
+
+.fv-progress-stat-value {
+    margin-top: 5px !important;
+    color: #F5F8F9 !important;
+    font-size: 1.16rem !important;
+    font-weight: 850 !important;
+    letter-spacing: -0.03em !important;
+    white-space: nowrap !important;
+}
+
+.fv-progress-target {
+    color: #78838A !important;
+    font-size: 0.75rem !important;
+}
+
+.fv-mini-progress,
+.fv-coaching-bar {
+    height: 4px !important;
+    overflow: hidden !important;
+    border-radius: 99px !important;
+    margin-top: 10px !important;
+    background: rgba(255,255,255,0.07) !important;
+}
+
+.fv-mini-progress span,
+.fv-coaching-bar span {
+    display: block !important;
+    height: 100% !important;
+    border-radius: inherit !important;
+    background:
+        linear-gradient(
+            90deg,
+            #FFC928,
+            #F4A900
+        ) !important;
+}
+
+.fv-form-heading {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-top: 14px !important;
+    padding-top: 13px !important;
+    border-top: 1px solid var(--fv-pro-line) !important;
+    color: #77838A !important;
+    font-size: 0.56rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.14em !important;
+}
+
+.fv-form-heading span:last-child {
+    color: var(--fv-pro-green) !important;
+}
+
+.fv-form-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3,1fr) !important;
+    gap: 7px !important;
+    margin-top: 8px !important;
+}
+
+.fv-form-metric-card {
+    min-height: 89px !important;
+    padding: 10px !important;
+    box-sizing: border-box !important;
+    border: 1px solid rgba(255,255,255,0.07) !important;
+    border-radius: 12px !important;
+    background: rgba(255,255,255,0.022) !important;
+}
+
+.fv-form-metric-label {
+    color: #748087 !important;
+    font-size: 0.51rem !important;
+    font-weight: 750 !important;
+}
+
+.fv-form-metric-value {
+    margin-top: 5px !important;
+    color: #F3F6F7 !important;
+    font-size: 1.05rem !important;
+    font-weight: 850 !important;
+}
+
+.fv-form-metric-status {
+    display: flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    margin-top: 5px !important;
+    color: #9BF1B8 !important;
+    font-size: 0.47rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase !important;
+}
+
+.fv-form-metric-status span {
+    width: 5px !important;
+    height: 5px !important;
+    border-radius: 50% !important;
+    background: var(--fv-pro-green) !important;
+}
+
+.fv-coaching-card {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+    margin-top: 8px !important;
+    padding: 11px !important;
+    border: 1px solid rgba(56,226,123,0.15) !important;
+    border-radius: 13px !important;
+    background:
+        linear-gradient(
+            140deg,
+            rgba(56,226,123,0.055),
+            rgba(255,255,255,0.018)
+        ) !important;
+}
+
+.fv-coaching-icon {
+    width: 29px !important;
+    height: 29px !important;
+    flex: 0 0 auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    color: #06110B !important;
+    background: var(--fv-pro-green) !important;
+    font-size: 0.75rem !important;
+    font-weight: 950 !important;
+}
+
+.fv-coaching-body {
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+}
+
+.fv-coaching-title {
+    color: #D9FFE6 !important;
+    font-size: 0.74rem !important;
+    font-weight: 850 !important;
+}
+
+.fv-coaching-copy {
+    margin-top: 3px !important;
+    color: #8CA399 !important;
+    font-size: 0.57rem !important;
+    line-height: 1.45 !important;
+}
+
+.fv-coaching-muted {
+    border-color: rgba(255,255,255,0.09) !important;
+    background: rgba(255,255,255,0.022) !important;
+}
+
+.fv-coaching-muted .fv-coaching-icon {
+    color: #C9D0D3 !important;
+    background: rgba(255,255,255,0.09) !important;
+}
+
+/* =========================================================
+   Responsive behavior
+   ========================================================= */
+
+@media (max-width: 1180px) and (min-width: 901px) {
+    .block-container:has(.fv-dashboard-screen),
+    .block-container:has(.fv-warmup-screen),
+    .block-container:has(.fv-trainer-screen) {
+        padding-left: 250px !important;
+        padding-right: 20px !important;
+    }
+
+    .fv-app-sidebar {
+        width: 218px !important;
+    }
+
+    .fv-dashboard-grid {
+        grid-template-columns: minmax(0, 1.45fr) minmax(210px,0.78fr) !important;
+    }
+
+    .fv-dashboard-side {
+        grid-column: 2 !important;
+    }
+
+    .fv-strength-card {
+        min-height: 380px !important;
+    }
+}
+
+@media (max-width: 900px) {
+    .block-container:has(.fv-dashboard-screen),
+    .block-container:has(.fv-warmup-screen),
+    .block-container:has(.fv-trainer-screen) {
+        padding-left: 18px !important;
+        padding-right: 18px !important;
+        padding-top: 70px !important;
+    }
+
+    .fv-app-sidebar {
+        display: none !important;
+    }
+
+    .fv-mobile-brand {
+        position: fixed !important;
+        z-index: 2000 !important;
+        left: 12px !important;
+        right: 12px !important;
+        top: 10px !important;
+        min-height: 46px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        padding: 0 12px !important;
+        box-sizing: border-box !important;
+        border: 1px solid rgba(255,255,255,0.08) !important;
+        border-radius: 13px !important;
+        background: rgba(7,10,11,0.86) !important;
+        backdrop-filter: blur(14px) !important;
+        box-shadow: 0 12px 35px rgba(0,0,0,0.24) !important;
+    }
+
+    .fv-mobile-brand-mark {
+        color: #0A0C0C !important;
+        background: var(--fv-pro-gold) !important;
+        border-radius: 8px !important;
+        padding: 4px 6px !important;
+        font-size: 0.58rem !important;
+        font-weight: 950 !important;
+    }
+
+    .fv-mobile-brand-name {
+        color: #F5F7F8 !important;
+        font-size: 0.72rem !important;
+        font-weight: 900 !important;
+        letter-spacing: 0.10em !important;
+    }
+
+    .fv-mobile-brand-sub {
+        color: #78838A !important;
+        font-size: 0.48rem !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.10em !important;
+    }
+
+    .fv-dashboard-header {
+        grid-template-columns: minmax(0,1fr) auto !important;
+    }
+
+    .fv-dashboard-quote {
+        display: none !important;
+    }
+
+    .fv-dashboard-grid {
+        grid-template-columns: 1fr 1fr !important;
+    }
+
+    .fv-workout-panel {
+        grid-column: 1 / -1 !important;
+    }
+
+    .fv-strength-card,
+    .fv-dashboard-side {
+        min-height: 340px !important;
+    }
+
+    .fv-warmup-hero {
+        grid-template-columns: 1fr !important;
+    }
+
+    .fv-trainer-hero {
+        align-items: flex-start !important;
+        flex-direction: column !important;
+    }
+
+    .fv-progress-stat-grid {
+        grid-template-columns: repeat(3,1fr) !important;
+    }
+
+    .fv-form-grid {
+        grid-template-columns: repeat(3,1fr) !important;
+    }
+
+    .block-container:has(.fv-warmup-screen)
+    div[data-testid="stHorizontalBlock"]:has(.fv-warmup-card-marker) {
+        flex-wrap: wrap !important;
+        row-gap: 10px !important;
+    }
+
+    .block-container:has(.fv-warmup-screen)
+    div[data-testid="stHorizontalBlock"]:has(.fv-warmup-card-marker)
+    > div[data-testid="stColumn"] {
+        flex: 1 1 48% !important;
+        min-width: 48% !important;
+        width: 48% !important;
+    }
+}
+
+@media (max-width: 680px) {
+    .block-container:has(.fv-dashboard-screen),
+    .block-container:has(.fv-warmup-screen),
+    .block-container:has(.fv-trainer-screen) {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+        padding-top: 66px !important;
+    }
+
+    .fv-dashboard-header {
+        min-height: 104px !important;
+        padding: 17px !important;
+        border-radius: 16px !important;
+    }
+
+    .fv-dashboard-header h1 {
+        font-size: clamp(1.35rem,6.5vw,2rem) !important;
+    }
+
+    .fv-dashboard-profile {
+        min-width: auto !important;
+        padding: 8px !important;
+    }
+
+    .fv-dashboard-profile div:nth-child(2) {
+        display: none !important;
+    }
+
+    .fv-plan-heading {
+        align-items: flex-start !important;
+        flex-direction: column !important;
+        gap: 9px !important;
+        padding: 15px !important;
+    }
+
+    .fv-plan-count {
+        align-self: stretch !important;
+        justify-content: center !important;
+    }
+
+    .block-container:has(.fv-dashboard-screen)
+    [data-testid="stPills"] button {
+        min-width: 85px !important;
+        min-height: 48px !important;
+        font-size: 0.57rem !important;
+    }
+
+    .fv-dashboard-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .fv-workout-panel,
+    .fv-strength-card,
+    .fv-dashboard-side {
+        grid-column: auto !important;
+    }
+
+    .fv-strength-card {
+        min-height: 310px !important;
+    }
+
+    .fv-dashboard-side {
+        min-height: auto !important;
+    }
+
+    .fv-pro-exercise-card {
+        grid-template-columns: 30px 45px minmax(0,1fr) !important;
+    }
+
+    .fv-pro-exercise-status {
+        grid-column: 3 !important;
+        justify-self: start !important;
+        min-width: 0 !important;
+        margin-top: 2px !important;
+    }
+
+    .fv-progress-stat-grid {
+        grid-template-columns: 1fr 1fr !important;
+    }
+
+    .fv-progress-stat:last-child {
+        grid-column: 1 / -1 !important;
+    }
+
+    .fv-form-grid {
+        grid-template-columns: 1fr 1fr !important;
+    }
+
+    .fv-form-metric-card:last-child:nth-child(odd) {
+        grid-column: 1 / -1 !important;
+    }
+
+    .fv-warmup-selected {
+        align-items: flex-start !important;
+    }
+
+    .fv-warmup-summary-card {
+        min-height: 112px !important;
+    }
+}
+
+@media (max-width: 430px) {
+    .fv-dashboard-header {
+        grid-template-columns: 1fr !important;
+    }
+
+    .fv-dashboard-profile {
+        width: fit-content !important;
+    }
+
+    .fv-dashboard-header p {
+        font-size: 0.68rem !important;
+    }
+
+    .fv-side-stat-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .fv-strength-card {
+        min-height: 290px !important;
+    }
+
+    .fv-progress-stat-grid,
+    .fv-form-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .fv-progress-stat:last-child,
+    .fv-form-metric-card:last-child:nth-child(odd) {
+        grid-column: auto !important;
+    }
+
+    .fv-trainer-hero h1 {
+        font-size: 1.23rem !important;
+    }
+
+    .fv-warmup-card-marker,
+    .fv-warmup-card-marker img,
+    .block-container:has(.fv-warmup-screen)
+    div[data-testid="stColumn"]:has(.fv-warmup-card-marker)
+    .stButton,
+    .block-container:has(.fv-warmup-screen)
+    div[data-testid="stColumn"]:has(.fv-warmup-card-marker)
+    .stButton > button {
+        min-height: 112px !important;
+        height: 112px !important;
+    }
+}
+
+@media (max-width: 360px) {
+    .fv-dashboard-header {
+        padding: 14px !important;
+    }
+
+    .fv-dashboard-header h1 {
+        font-size: 1.28rem !important;
+    }
+
+    .fv-plan-heading h2 {
+        font-size: 1.02rem !important;
+    }
+
+    .fv-pro-exercise-card {
+        gap: 7px !important;
+        padding: 7px !important;
+    }
+
+    .fv-pro-exercise-image {
+        width: 42px !important;
+        height: 40px !important;
+    }
+
+    .fv-pro-exercise-copy strong {
+        font-size: 0.68rem !important;
+    }
+
+    .fv-pro-exercise-copy span {
+        font-size: 0.53rem !important;
+    }
+
+    .fv-pro-exercise-status {
+        font-size: 0.51rem !important;
+    }
+
+    .fv-category-pills {
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        padding-bottom: 3px !important;
+    }
+
+    .fv-category-pills span {
+        flex: 0 0 auto !important;
+    }
+}
+
+
+/* =========================================================
+   FINAL FUNCTIONALITY / RESPONSIVE POLISH
+   ========================================================= */
+
+/* Keep the visual sidebar non-interactive; transparent Streamlit
+   buttons positioned over it provide the real click targets. */
+.fv-side-nav {
+    pointer-events: none !important;
+}
+
+.fv-sidebar-action-marker {
+    display: none !important;
+}
+
+/* Sidebar action overlays */
+div[data-testid="stVerticalBlock"]:has(.fv-sidebar-action-marker),
+div[data-testid="stVerticalBlockBorderWrapper"]:has(.fv-sidebar-action-marker) {
+    position: fixed !important;
+    left: 16px !important;
+    width: 206px !important;
+    height: 47px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    z-index: 1205 !important;
+    pointer-events: auto !important;
+}
+
+div[data-testid="stVerticalBlock"]:has(.fv-sidebar-action-dashboard),
+div[data-testid="stVerticalBlockBorderWrapper"]:has(.fv-sidebar-action-dashboard) {
+    top: 160px !important;
+}
+
+div[data-testid="stVerticalBlock"]:has(.fv-sidebar-action-workout_plan),
+div[data-testid="stVerticalBlockBorderWrapper"]:has(.fv-sidebar-action-workout_plan) {
+    top: 212px !important;
+}
+
+div[data-testid="stVerticalBlock"]:has(.fv-sidebar-action-warmup),
+div[data-testid="stVerticalBlockBorderWrapper"]:has(.fv-sidebar-action-warmup) {
+    top: 264px !important;
+}
+
+div[data-testid="stVerticalBlock"]:has(.fv-sidebar-action-marker) .stButton,
+div[data-testid="stVerticalBlockBorderWrapper"]:has(.fv-sidebar-action-marker) .stButton {
+    width: 100% !important;
+    height: 47px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+div[data-testid="stVerticalBlock"]:has(.fv-sidebar-action-marker) .stButton > button,
+div[data-testid="stVerticalBlockBorderWrapper"]:has(.fv-sidebar-action-marker) .stButton > button {
+    width: 100% !important;
+    height: 47px !important;
+    min-height: 47px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 0.01 !important;
+    color: transparent !important;
+    background: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+}
+
+div[data-testid="stVerticalBlock"]:has(.fv-sidebar-action-marker) .stButton > button:focus-visible,
+div[data-testid="stVerticalBlockBorderWrapper"]:has(.fv-sidebar-action-marker) .stButton > button:focus-visible {
+    opacity: 0.08 !important;
+    outline: 2px solid rgba(255,201,40,0.8) !important;
+    outline-offset: -2px !important;
+}
+
+/* -----------------------------
+   Desktop 28-day rail
+   ----------------------------- */
+.block-container:has(.fv-dashboard-screen) [data-testid="stPills"] {
+    margin: 0 0 18px !important;
+    padding: 7px !important;
+    border: 1px solid rgba(255,255,255,0.075) !important;
+    border-radius: 16px !important;
+    background: rgba(8,12,13,0.84) !important;
+    overflow: hidden !important;
+}
+
+.block-container:has(.fv-dashboard-screen) [data-testid="stPills"] [role="radiogroup"] {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 7px !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding: 1px 1px 3px !important;
+    scrollbar-width: thin !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+
+.block-container:has(.fv-dashboard-screen) [data-testid="stPills"] [role="radiogroup"]::-webkit-scrollbar {
+    height: 4px !important;
+}
+
+.block-container:has(.fv-dashboard-screen) [data-testid="stPills"] [role="radiogroup"] > * {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: auto !important;
+}
+
+.block-container:has(.fv-dashboard-screen) [data-testid="stPills"] button {
+    flex: 0 0 auto !important;
+    min-width: 58px !important;
+    width: auto !important;
+    min-height: 40px !important;
+    padding: 0 12px !important;
+    border-radius: 11px !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    font-size: 0.68rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.03em !important;
+    white-space: nowrap !important;
+    transition:
+        border-color 140ms ease,
+        background 140ms ease,
+        box-shadow 140ms ease,
+        transform 140ms ease !important;
+}
+
+.block-container:has(.fv-dashboard-screen) [data-testid="stPills"] button:hover {
+    transform: translateY(-1px) !important;
+}
+
+.block-container:has(.fv-dashboard-screen) [data-testid="stPills"] button[aria-selected="true"] {
+    border-color: rgba(255,201,40,0.95) !important;
+    box-shadow:
+        0 0 0 2px rgba(255,201,40,0.18),
+        0 8px 24px rgba(255,201,40,0.10) !important;
+}
+
+/* Locked future days are visually disabled and not clickable. */
+.block-container:has(.fv-dashboard-screen) [data-testid="stPills"] button:disabled {
+    cursor: not-allowed !important;
+    opacity: 0.52 !important;
+}
+
+/* -----------------------------
+   Warm-up category rail
+   ----------------------------- */
+.block-container:has(.fv-warmup-screen) [data-testid="stPills"] {
+    margin: 0 0 18px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    overflow: visible !important;
+}
+
+.block-container:has(.fv-warmup-screen) [data-testid="stPills"] [role="radiogroup"] {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+}
+
+.block-container:has(.fv-warmup-screen) [data-testid="stPills"] button {
+    min-width: auto !important;
+    min-height: 34px !important;
+    padding: 0 14px !important;
+    border-radius: 999px !important;
+    background: rgba(255,255,255,0.02) !important;
+    border: 1px solid rgba(255,255,255,0.075) !important;
+    color: #8B969B !important;
+    font-size: 0.61rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.04em !important;
+}
+
+.block-container:has(.fv-warmup-screen) [data-testid="stPills"] button[aria-selected="true"] {
+    color: #12100A !important;
+    background: var(--fv-pro-gold) !important;
+    border-color: var(--fv-pro-gold) !important;
+    box-shadow: 0 8px 22px rgba(255,201,40,0.12) !important;
+}
+
+/* Premium is future scope: keep the badge visual, not interactive. */
+.fv-dashboard-profile small {
+    display: inline-block !important;
+    margin-top: 4px !important;
+    color: #9D8750 !important;
+    font-size: 0.45rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.12em !important;
+}
+
+/* Keep the dashboard count/readout aligned with the reference layout. */
+.fv-plan-heading {
+    margin-top: 18px !important;
+}
+
+/* -----------------------------
+   Mobile / small-screen sidebar
+   ----------------------------- */
+@media (max-width: 900px) {
+    .block-container:has(.fv-dashboard-screen),
+    .block-container:has(.fv-warmup-screen),
+    .block-container:has(.fv-trainer-screen) {
+        padding-left: 96px !important;
+        padding-right: 14px !important;
+    }
+
+    .fv-app-sidebar {
+        width: 78px !important;
+        padding: 14px 9px 12px !important;
+    }
+
+    .fv-sidebar-brand {
+        min-height: 62px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .fv-sidebar-logo {
+        width: 57px !important;
+    }
+
+    .fv-side-nav {
+        gap: 7px !important;
+        margin-top: 4px !important;
+    }
+
+    .fv-side-nav-item {
+        justify-content: center !important;
+        min-height: 48px !important;
+        padding: 0 !important;
+        border-radius: 12px !important;
+    }
+
+    .fv-side-nav-item > span:last-child {
+        display: none !important;
+    }
+
+    .fv-side-nav-icon {
+        width: auto !important;
+        font-size: 1rem !important;
+    }
+
+    .fv-sidebar-action-marker {
+        display: none !important;
+    }
+
+    div[data-testid="stVerticalBlock"]:has(.fv-sidebar-action-marker),
+    div[data-testid="stVerticalBlockBorderWrapper"]:has(.fv-sidebar-action-marker) {
+        left: 9px !important;
+        width: 60px !important;
+        height: 48px !important;
+    }
+
+    div[data-testid="stVerticalBlock"]:has(.fv-sidebar-action-dashboard),
+    div[data-testid="stVerticalBlockBorderWrapper"]:has(.fv-sidebar-action-dashboard) {
+        top: 86px !important;
+    }
+
+    div[data-testid="stVerticalBlock"]:has(.fv-sidebar-action-workout_plan),
+    div[data-testid="stVerticalBlockBorderWrapper"]:has(.fv-sidebar-action-workout_plan) {
+        top: 141px !important;
+    }
+
+    div[data-testid="stVerticalBlock"]:has(.fv-sidebar-action-warmup),
+    div[data-testid="stVerticalBlockBorderWrapper"]:has(.fv-sidebar-action-warmup) {
+        top: 196px !important;
+    }
+
+    div[data-testid="stVerticalBlock"]:has(.fv-sidebar-action-marker) .stButton > button,
+    div[data-testid="stVerticalBlockBorderWrapper"]:has(.fv-sidebar-action-marker) .stButton > button {
+        height: 48px !important;
+        min-height: 48px !important;
+    }
+
+    .fv-mobile-brand {
+        display: none !important;
+    }
+
+    .block-container:has(.fv-dashboard-screen) [data-testid="stPills"] [role="radiogroup"] {
+        max-width: calc(100vw - 122px) !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .block-container:has(.fv-dashboard-screen),
+    .block-container:has(.fv-warmup-screen),
+    .block-container:has(.fv-trainer-screen) {
+        padding-left: 88px !important;
+        padding-right: 10px !important;
+    }
+
+    .fv-app-sidebar {
+        width: 70px !important;
+        padding-left: 7px !important;
+        padding-right: 7px !important;
+    }
+
+    .fv-sidebar-logo {
+        width: 52px !important;
+    }
+
+    div[data-testid="stVerticalBlock"]:has(.fv-sidebar-action-marker),
+    div[data-testid="stVerticalBlockBorderWrapper"]:has(.fv-sidebar-action-marker) {
+        left: 6px !important;
+        width: 56px !important;
+    }
+}
+
+@media (max-width: 420px) {
+    .block-container:has(.fv-dashboard-screen),
+    .block-container:has(.fv-warmup-screen),
+    .block-container:has(.fv-trainer-screen) {
+        padding-left: 80px !important;
+        padding-right: 8px !important;
+    }
+
+    .fv-app-sidebar {
+        width: 64px !important;
+    }
+
+    .fv-sidebar-logo {
+        width: 48px !important;
+    }
+
+    div[data-testid="stVerticalBlock"]:has(.fv-sidebar-action-marker),
+    div[data-testid="stVerticalBlockBorderWrapper"]:has(.fv-sidebar-action-marker) {
+        left: 4px !important;
+        width: 52px !important;
+    }
+
+    .block-container:has(.fv-dashboard-screen) [data-testid="stPills"] button {
+        min-width: 52px !important;
+        padding: 0 10px !important;
+        font-size: 0.62rem !important;
+    }
+}
+
+/* Re-enable the custom navigation rail on smaller screens so the actual
+   transparent Streamlit navigation targets remain reachable. */
+@media (max-width: 900px) {
+    .fv-app-sidebar {
+        display: flex !important;
+    }
+}
+
+/* =========================================================
+   Sidebar navigation — key-based hitbox alignment
+   ========================================================= */
+
+.st-key-sidebar-actions-host {
+    position: fixed !important;
+    left: 16px !important;
+    top: 160px !important;
+    width: 206px !important;
+    z-index: 1205 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    pointer-events: auto !important;
+}
+
+.st-key-sidebar-actions-host .stButton {
+    width: 100% !important;
+    height: 47px !important;
+    min-height: 47px !important;
+    margin: 0 0 5px !important;
+    padding: 0 !important;
+}
+
+.st-key-sidebar-actions-host .stButton:last-child {
+    margin-bottom: 0 !important;
+}
+
+.st-key-sidebar-actions-host .stButton > button {
+    width: 100% !important;
+    height: 47px !important;
+    min-height: 47px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 0.01 !important;
+    color: transparent !important;
+    background: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+}
+
+/* Only the day rail carries day-state colors; exercise rows stay neutral. */
+.fv-pro-exercise-card.current {
+    border-color: rgba(255,255,255,0.07) !important;
+    box-shadow: none !important;
+}
+
+.fv-pro-exercise-card.current .fv-pro-exercise-index {
+    background: rgba(255,255,255,0.035) !important;
+    color: #DCE2E5 !important;
+    border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Show the entire dashboard motivational image inside its card. */
+.fv-strength-card > img {
+    object-fit: contain !important;
+    object-position: center !important;
+    background: #080D0F !important;
+}
+
+/* Keep the full warm-up image composition visible inside each fixed card. */
+.st-key-warmup-card-march_in_place [data-testid="stButton"] button,
+.st-key-warmup-card-wall_sit [data-testid="stButton"] button,
+.st-key-warmup-card-plank [data-testid="stButton"] button,
+.st-key-warmup-card-standing_knee_raise [data-testid="stButton"] button,
+.st-key-warmup-card-low_impact_jumping_jack [data-testid="stButton"] button,
+.st-key-warmup-card-bodyweight_squat [data-testid="stButton"] button,
+.st-key-warmup-card-reverse_lunge [data-testid="stButton"] button,
+.st-key-warmup-card-standing_side_leg_raise [data-testid="stButton"] button,
+.st-key-warmup-card-hamstring_curl [data-testid="stButton"] button,
+.st-key-warmup-card-hip_extension [data-testid="stButton"] button,
+.st-key-warmup-card-calf_raise [data-testid="stButton"] button,
+.st-key-warmup-card-glute_bridge [data-testid="stButton"] button,
+.st-key-warmup-card-sit_to_stand [data-testid="stButton"] button,
+.st-key-warmup-card-wall_push_up [data-testid="stButton"] button,
+.st-key-warmup-card-knee_push_up [data-testid="stButton"] button,
+.st-key-warmup-card-standard_push_up [data-testid="stButton"] button,
+.st-key-warmup-card-shoulder_press [data-testid="stButton"] button,
+.st-key-warmup-card-biceps_curl [data-testid="stButton"] button {
+    background-size: 100% 100%, contain !important;
+    background-position: center, center !important;
+    background-repeat: no-repeat !important;
+}
+
+/* Single-line, genuinely scrollable 28-day rail. */
+.st-key-dashboard-day-rail {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scrollbar-width: thin !important;
+    -webkit-overflow-scrolling: touch !important;
+    border: 1px solid var(--fv-pro-line) !important;
+    border-radius: 17px !important;
+    padding: 7px !important;
+    background: linear-gradient(180deg, rgba(14,20,22,0.96), rgba(9,13,14,0.95)) !important;
+}
+
+.st-key-dashboard-day-rail [data-testid="stHorizontalBlock"] {
+    width: max-content !important;
+    min-width: max-content !important;
+    flex-wrap: nowrap !important;
+}
+
+.st-key-dashboard-day-rail .stButton {
+    width: max-content !important;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+}
+
+.st-key-dashboard-day-rail .stButton > button {
+    white-space: nowrap !important;
+}
+
+@media (max-width: 900px) {
+    .st-key-sidebar-actions-host {
+        left: 9px !important;
+        top: 90px !important;
+        width: 60px !important;
+    }
+
+    .st-key-sidebar-actions-host .stButton,
+    .st-key-sidebar-actions-host .stButton > button {
+        height: 48px !important;
+        min-height: 48px !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .st-key-sidebar-actions-host {
+        left: 6px !important;
+        top: 90px !important;
+        width: 56px !important;
+    }
+}
+
+@media (max-width: 420px) {
+    .st-key-sidebar-actions-host {
+        left: 4px !important;
+        top: 88px !important;
+        width: 52px !important;
+    }
+}
