@@ -45,6 +45,11 @@ class MLDosagePredictor(Week1DosagePredictor):
         self.reps_bundle: dict[str, Any] | None = None
         self.duration_bundle: dict[str, Any] | None = None
 
+        print(
+            "[ML] MLDosagePredictor initialized",
+            flush=True,
+        )
+
     @staticmethod
     def _load_model(
         model_path: str | Path,
@@ -52,12 +57,42 @@ class MLDosagePredictor(Week1DosagePredictor):
     ) -> dict[str, Any]:
         path = Path(model_path)
 
+        print(
+            f"[ML] _load_model START: {model_name}",
+            flush=True,
+        )
+
+        print(
+            f"[ML] Model path: {path}",
+            flush=True,
+        )
+
         if not path.exists():
+            print(
+                f"[ML] Model NOT FOUND: {path}",
+                flush=True,
+            )
+
             raise FileNotFoundError(
                 f"{model_name} model not found: {path}"
             )
 
+        print(
+            f"[ML] Model exists: {path.stat().st_size / (1024**2):.1f} MB",
+            flush=True,
+        )
+
+        print(
+            f"[ML] joblib.load START: {model_name}",
+            flush=True,
+        )
+
         bundle = joblib.load(path)
+
+        print(
+            f"[ML] joblib.load COMPLETE: {model_name}",
+            flush=True,
+        )
 
         required_keys = {
             "model",
@@ -68,10 +103,21 @@ class MLDosagePredictor(Week1DosagePredictor):
         missing_keys = required_keys - set(bundle.keys())
 
         if missing_keys:
+            print(
+                f"[ML] Missing keys in {model_name}: "
+                f"{sorted(missing_keys)}",
+                flush=True,
+            )
+
             raise ValueError(
                 f"{model_name} model is missing keys: "
                 f"{sorted(missing_keys)}"
             )
+
+        print(
+            f"[ML] Model bundle verified: {model_name}",
+            flush=True,
+        )
 
         return bundle
 
@@ -88,7 +134,7 @@ class MLDosagePredictor(Week1DosagePredictor):
         height_m = user.height_cm / 100.0
         bmi = user.weight_kg / (height_m ** 2)
 
-        return {
+        features = {
             "age": user.age,
             "height_cm": user.height_cm,
             "weight_kg": user.weight_kg,
@@ -121,6 +167,13 @@ class MLDosagePredictor(Week1DosagePredictor):
             "measurement_type": exercise["measurement_type"],
         }
 
+        print(
+            f"[ML] Features built for: {exercise.get('id')}",
+            flush=True,
+        )
+
+        return features
+
     @staticmethod
     def _predict(
         bundle: dict[str, Any],
@@ -128,17 +181,47 @@ class MLDosagePredictor(Week1DosagePredictor):
     ) -> float:
         import pandas as pd
 
+        print(
+            "[ML] _predict START",
+            flush=True,
+        )
+
         dataframe = pd.DataFrame([features])
 
         feature_columns = bundle["feature_columns"]
 
+        print(
+            f"[ML] Feature columns: {len(feature_columns)}",
+            flush=True,
+        )
+
         dataframe = dataframe[feature_columns]
+
+        print(
+            "[ML] Preprocessor transform START",
+            flush=True,
+        )
 
         encoded = bundle["preprocessor"].transform(
             dataframe
         )
 
+        print(
+            "[ML] Preprocessor transform COMPLETE",
+            flush=True,
+        )
+
+        print(
+            "[ML] Model predict START",
+            flush=True,
+        )
+
         prediction = bundle["model"].predict(encoded)
+
+        print(
+            "[ML] Model predict COMPLETE",
+            flush=True,
+        )
 
         if len(prediction) != 1:
             raise RuntimeError(
@@ -146,21 +229,37 @@ class MLDosagePredictor(Week1DosagePredictor):
                 "of predictions."
             )
 
-        return float(prediction[0])
+        result = float(prediction[0])
 
+        print(
+            f"[ML] Prediction result: {result}",
+            flush=True,
+        )
+
+        return result
 
     def predict(
         self,
         user: UserProfile,
         exercise: dict[str, Any],
     ) -> DosagePrediction:
+        exercise_id = exercise.get("id")
+
+        print(
+            f"[ML] ========================================",
+            flush=True,
+        )
+
+        print(
+            f"[ML] PREDICT START: {exercise_id}",
+            flush=True,
+        )
+
         if not isinstance(user, UserProfile):
             raise TypeError("user must be a UserProfile.")
 
         if not isinstance(exercise, dict):
             raise TypeError("exercise must be a dictionary.")
-
-        exercise_id = exercise.get("id")
 
         if not exercise_id:
             raise ValueError(
@@ -171,40 +270,118 @@ class MLDosagePredictor(Week1DosagePredictor):
             "measurement_type"
         )
 
+        print(
+            f"[ML] Measurement type: {measurement_type}",
+            flush=True,
+        )
+
         if measurement_type not in {"reps", "time"}:
             raise ValueError(
                 f"Unsupported measurement_type: "
                 f"{measurement_type!r}"
             )
 
+        print(
+            "[ML] Building features",
+            flush=True,
+        )
+
         features = self._build_features(
             user=user,
             exercise=exercise,
         )
 
-        # Load the sets model only when it is actually needed.
+        print(
+            "[ML] Features ready",
+            flush=True,
+        )
+
+        # ---------------------------------------------------------
+        # SETS MODEL
+        # ---------------------------------------------------------
+
         if self.sets_bundle is None:
+            print(
+                "[ML] Loading SETS model",
+                flush=True,
+            )
+
             self.sets_bundle = self._load_model(
                 self.sets_model_path,
                 "sets",
             )
+
+            print(
+                "[ML] SETS model loaded and retained",
+                flush=True,
+            )
+        else:
+            print(
+                "[ML] SETS model already loaded",
+                flush=True,
+            )
+
+        print(
+            "[ML] Predicting SETS",
+            flush=True,
+        )
 
         sets_prediction = self._predict(
             bundle=self.sets_bundle,
             features=features,
         )
 
+        print(
+            f"[ML] SETS prediction complete: "
+            f"{sets_prediction}",
+            flush=True,
+        )
+
+        # ---------------------------------------------------------
+        # REP-BASED EXERCISES
+        # ---------------------------------------------------------
+
         if measurement_type == "reps":
-            # Load the reps model only for repetition-based exercises.
             if self.reps_bundle is None:
+                print(
+                    "[ML] Loading REPS model",
+                    flush=True,
+                )
+
                 self.reps_bundle = self._load_model(
                     self.reps_model_path,
                     "reps",
                 )
 
+                print(
+                    "[ML] REPS model loaded and retained",
+                    flush=True,
+                )
+            else:
+                print(
+                    "[ML] REPS model already loaded",
+                    flush=True,
+                )
+
+            print(
+                "[ML] Predicting REPS",
+                flush=True,
+            )
+
             reps_prediction = self._predict(
                 bundle=self.reps_bundle,
                 features=features,
+            )
+
+            print(
+                f"[ML] REPS prediction complete: "
+                f"{reps_prediction}",
+                flush=True,
+            )
+
+            print(
+                f"[ML] PREDICT COMPLETE: {exercise_id}",
+                flush=True,
             )
 
             return DosagePrediction(
@@ -214,16 +391,55 @@ class MLDosagePredictor(Week1DosagePredictor):
                 duration_seconds=None,
             )
 
-        # Load the duration model only for time-based exercises.
+        # ---------------------------------------------------------
+        # TIME-BASED EXERCISES
+        # ---------------------------------------------------------
+
+        print(
+            "[ML] Time-based exercise detected",
+            flush=True,
+        )
+
         if self.duration_bundle is None:
+            print(
+                "[ML] Loading DURATION model",
+                flush=True,
+            )
+
             self.duration_bundle = self._load_model(
                 self.duration_model_path,
                 "duration",
             )
 
+            print(
+                "[ML] DURATION model loaded and retained",
+                flush=True,
+            )
+        else:
+            print(
+                "[ML] DURATION model already loaded",
+                flush=True,
+            )
+
+        print(
+            "[ML] Predicting DURATION",
+            flush=True,
+        )
+
         duration_prediction = self._predict(
             bundle=self.duration_bundle,
             features=features,
+        )
+
+        print(
+            f"[ML] DURATION prediction complete: "
+            f"{duration_prediction}",
+            flush=True,
+        )
+
+        print(
+            f"[ML] PREDICT COMPLETE: {exercise_id}",
+            flush=True,
         )
 
         return DosagePrediction(
