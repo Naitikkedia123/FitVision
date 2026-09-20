@@ -119,7 +119,10 @@ class MLDosagePredictor(Week1DosagePredictor):
             flush=True,
         )
 
-        bundle = joblib.load(path)
+        bundle = joblib.load(
+            path,
+            mmap_mode="r",
+        )
 
         print(
             f"[ML] joblib.load COMPLETE: {model_name}",
