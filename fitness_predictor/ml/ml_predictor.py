@@ -5,6 +5,7 @@ import joblib
 
 from ml.prediction import DosagePrediction, Week1DosagePredictor
 from models.user_profile import UserProfile
+from model_downloader import ensure_model_available
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -83,11 +84,25 @@ class MLDosagePredictor(Week1DosagePredictor):
         )
 
         print(
+            f"[ML] Ensuring model is available: {model_name}",
+            flush=True,
+        )
+
+        ensure_model_available(
+            path.name,
+        )
+
+        print(
             f"[ML] joblib.load START: {model_name}",
             flush=True,
         )
 
         bundle = joblib.load(path)
+
+        print(
+            f"[ML] joblib.load COMPLETE: {model_name}",
+            flush=True,
+        )
 
         print(
             f"[ML] joblib.load COMPLETE: {model_name}",
