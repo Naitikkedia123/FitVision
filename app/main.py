@@ -1000,62 +1000,24 @@ def render_auth_home() -> None:
 
                             handle_authenticated_user(result)
 
-                        # -------------------------------------------------
-                        # No session:
-                        # email confirmation is enabled, OR Supabase
-                        # returned an existing/obfuscated user.
-                        #
-                        # Probe the submitted credentials so we can
-                        # distinguish an already-confirmed account from
-                        # an unconfirmed account.
-                        # -------------------------------------------------
-
                         else:
 
-                            try:
+                            # Signup succeeded, but Supabase returned no session.
+                            # This is the expected state when email confirmation
+                            # is enabled.
+                            st.session_state[
+                                "pending_confirmation_email"
+                            ] = email_value
 
-                                existing_result = (
-                                    auth_service.sign_in(
-                                        email=email_value,
-                                        password=signup_password,
-                                    )
-                                )
+                            st.session_state[
+                                "confirmation_resend_available_at"
+                            ] = time.time() + 60
 
-                                # Existing confirmed account.
-                                handle_authenticated_user(
-                                    existing_result
-                                )
+                            st.session_state[
+                                "screen"
+                            ] = "email_confirmation"
 
-                            except Exception as sign_in_exc:
-
-                                # Existing account whose email has not
-                                # been confirmed yet, or a brand-new
-                                # signup waiting for confirmation.
-                                if is_email_not_confirmed_error(
-                                    sign_in_exc
-                                ):
-
-                                    st.session_state[
-                                        "pending_confirmation_email"
-                                    ] = email_value
-
-                                    st.session_state[
-                                        "confirmation_resend_available_at"
-                                    ] = time.time() + 60
-
-                                    st.session_state[
-                                        "screen"
-                                    ] = "email_confirmation"
-
-                                    st.rerun()
-
-                                else:
-
-                                    # Preserve the useful original
-                                    # signup error instead of hiding it.
-                                    st.error(
-                                        str(sign_in_exc)
-                                    )
+                            st.rerun()
 
                     except Exception as exc:
 
@@ -3533,6 +3495,14 @@ def main() -> None:
         # No user_id available.
         st.session_state["onboarding_step"] = 1
         render_onboarding()
+        return
+
+    # ---------------------------------------------------------
+    # EMAIL CONFIRMATION
+    # ---------------------------------------------------------
+
+    if st.session_state.get("screen") == "email_confirmation":
+        render_email_confirmation()
         return
 
     render_auth_home()
