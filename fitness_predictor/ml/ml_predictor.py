@@ -17,7 +17,7 @@ SETS_MODEL_PATH = (
 )
 
 REPS_MODEL_PATH = (
-    PROJECT_ROOT / "models" / "reps_model.joblib"
+    PROJECT_ROOT / "models" / "reps_model_uncompressed.joblib"
 )
 
 DURATION_MODEL_PATH = (
