@@ -1,5 +1,7 @@
 from pathlib import Path
 from typing import Any
+import os
+import psutil
 
 import joblib
 
@@ -106,28 +108,22 @@ class MLDosagePredictor(Week1DosagePredictor):
 
         file_size_mb = path.stat().st_size / (1024 ** 2)
 
+        print(f"[ML] Model exists: {file_size_mb:.1f} MB", flush=True)
+
+        process = psutil.Process(os.getpid())
+        memory = process.memory_info()
+
         print(
-            f"[ML] Model exists: {file_size_mb:.1f} MB",
+            f"[ML] RAM BEFORE LOAD: "
+            f"{memory.rss / (1024 ** 3):.2f} GB",
             flush=True,
         )
 
-        # ---------------------------------------------------------
-        # LOAD MODEL
-        # ---------------------------------------------------------
-        print(
-            f"[ML] joblib.load START: {model_name}",
-            flush=True,
-        )
+        print(f"[ML] joblib.load START: {model_name}", flush=True)
 
-        bundle = joblib.load(
-            path,
-            mmap_mode="r",
-        )
+        bundle = joblib.load(path, mmap_mode="r")
 
-        print(
-            f"[ML] joblib.load COMPLETE: {model_name}",
-            flush=True,
-        )
+        print(f"[ML] joblib.load COMPLETE: {model_name}", flush=True)
 
         # ---------------------------------------------------------
         # VERIFY MODEL BUNDLE
