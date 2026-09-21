@@ -1,8 +1,9 @@
 from pathlib import Path
 from typing import Any
 import os
-import psutil
+import gc
 
+import psutil
 import joblib
 
 from ml.prediction import DosagePrediction, Week1DosagePredictor
@@ -11,6 +12,7 @@ from model_downloader import ensure_model_available
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
 
 SETS_MODEL_PATH = (
     PROJECT_ROOT / "models" / "sets_model_uncompressed.joblib"
@@ -35,6 +37,10 @@ class MLDosagePredictor(Week1DosagePredictor):
     The predictor produces raw continuous predictions.
     DosageValidator remains responsible for enforcing the
     final dosage constraints.
+
+    For production plan generation, predict_batch() is used
+    so that only one large ML model is resident in memory
+    at a time.
     """
 
     def __init__(
@@ -69,6 +75,9 @@ class MLDosagePredictor(Week1DosagePredictor):
         IMPORTANT:
         The model must be downloaded BEFORE checking whether
         the local file exists.
+
+        mmap_mode="r" is used so uncompressed joblib models
+        can be memory-mapped instead of fully copied into RAM.
         """
 
         path = Path(model_path)
@@ -108,7 +117,10 @@ class MLDosagePredictor(Week1DosagePredictor):
 
         file_size_mb = path.stat().st_size / (1024 ** 2)
 
-        print(f"[ML] Model exists: {file_size_mb:.1f} MB", flush=True)
+        print(
+            f"[ML] Model exists: {file_size_mb:.1f} MB",
+            flush=True,
+        )
 
         process = psutil.Process(os.getpid())
         memory = process.memory_info()
@@ -119,11 +131,20 @@ class MLDosagePredictor(Week1DosagePredictor):
             flush=True,
         )
 
-        print(f"[ML] joblib.load START: {model_name}", flush=True)
+        print(
+            f"[ML] joblib.load START: {model_name}",
+            flush=True,
+        )
 
-        bundle = joblib.load(path, mmap_mode="r")
+        bundle = joblib.load(
+            path,
+            mmap_mode="r",
+        )
 
-        print(f"[ML] joblib.load COMPLETE: {model_name}", flush=True)
+        print(
+            f"[ML] joblib.load COMPLETE: {model_name}",
+            flush=True,
+        )
 
         # ---------------------------------------------------------
         # VERIFY MODEL BUNDLE
@@ -170,6 +191,7 @@ class MLDosagePredictor(Week1DosagePredictor):
             pass
 
         height_m = user.height_cm / 100.0
+
         bmi = user.weight_kg / (height_m ** 2)
 
         features = {
@@ -258,7 +280,9 @@ class MLDosagePredictor(Week1DosagePredictor):
             flush=True,
         )
 
-        prediction = bundle["model"].predict(encoded)
+        prediction = bundle["model"].predict(
+            encoded
+        )
 
         print(
             "[ML] Model predict COMPLETE",
@@ -280,6 +304,293 @@ class MLDosagePredictor(Week1DosagePredictor):
 
         return result
 
+    def predict_batch(
+        self,
+        user: UserProfile,
+        exercises: list[dict[str, Any]],
+    ) -> list[DosagePrediction]:
+        """
+        Predict dosage for all exercises while keeping only one
+        large ML model resident in memory at a time.
+
+        Flow:
+
+            1. Build all features.
+            2. Load SETS and predict all exercises.
+            3. Release SETS.
+            4. Load REPS and predict rep-based exercises.
+            5. Release REPS.
+            6. Load DURATION and predict time-based exercises.
+            7. Release DURATION.
+            8. Combine predictions in original exercise order.
+
+        The trained models themselves are not modified.
+        """
+
+        if not isinstance(user, UserProfile):
+            raise TypeError(
+                "user must be a UserProfile."
+            )
+
+        if not isinstance(exercises, list):
+            raise TypeError(
+                "exercises must be a list."
+            )
+
+        if not exercises:
+            return []
+
+        print(
+            f"[ML] BATCH PREDICTION START - "
+            f"{len(exercises)} exercises",
+            flush=True,
+        )
+
+        # ---------------------------------------------------------
+        # BUILD FEATURES ONCE
+        # ---------------------------------------------------------
+        feature_data = []
+
+        for exercise in exercises:
+            exercise_id = exercise.get("id")
+
+            if not exercise_id:
+                raise ValueError(
+                    "Exercise is missing its id."
+                )
+
+            measurement_type = exercise.get(
+                "measurement_type"
+            )
+
+            if measurement_type not in {
+                "reps",
+                "time",
+            }:
+                raise ValueError(
+                    f"Unsupported measurement_type: "
+                    f"{measurement_type!r}"
+                )
+
+            features = self._build_features(
+                user=user,
+                exercise=exercise,
+            )
+
+            feature_data.append(
+                {
+                    "exercise": exercise,
+                    "features": features,
+                }
+            )
+
+        # ---------------------------------------------------------
+        # PHASE 1: SETS
+        # ---------------------------------------------------------
+        print(
+            "[ML] BATCH PHASE 1: SETS",
+            flush=True,
+        )
+
+        self.sets_bundle = self._load_model(
+            self.sets_model_path,
+            "sets",
+        )
+
+        sets_predictions = {}
+
+        for item in feature_data:
+            exercise = item["exercise"]
+            features = item["features"]
+            exercise_id = exercise["id"]
+
+            print(
+                f"[ML] SETS prediction: {exercise_id}",
+                flush=True,
+            )
+
+            sets_predictions[exercise_id] = self._predict(
+                bundle=self.sets_bundle,
+                features=features,
+            )
+
+        print(
+            "[ML] SETS PHASE COMPLETE",
+            flush=True,
+        )
+
+        # ---------------------------------------------------------
+        # RELEASE SETS
+        # ---------------------------------------------------------
+        self.sets_bundle = None
+
+        gc.collect()
+
+        print(
+            "[ML] SETS model released from memory",
+            flush=True,
+        )
+
+        # ---------------------------------------------------------
+        # PHASE 2: REPS
+        # ---------------------------------------------------------
+        reps_predictions = {}
+
+        rep_items = [
+            item
+            for item in feature_data
+            if item["exercise"]["measurement_type"]
+            == "reps"
+        ]
+
+        if rep_items:
+            print(
+                "[ML] BATCH PHASE 2: REPS",
+                flush=True,
+            )
+
+            self.reps_bundle = self._load_model(
+                self.reps_model_path,
+                "reps",
+            )
+
+            for item in rep_items:
+                exercise = item["exercise"]
+                features = item["features"]
+                exercise_id = exercise["id"]
+
+                print(
+                    f"[ML] REPS prediction: {exercise_id}",
+                    flush=True,
+                )
+
+                reps_predictions[exercise_id] = self._predict(
+                    bundle=self.reps_bundle,
+                    features=features,
+                )
+
+            print(
+                "[ML] REPS PHASE COMPLETE",
+                flush=True,
+            )
+
+            # -----------------------------------------------------
+            # RELEASE REPS
+            # -----------------------------------------------------
+            self.reps_bundle = None
+
+            gc.collect()
+
+            print(
+                "[ML] REPS model released from memory",
+                flush=True,
+            )
+
+        # ---------------------------------------------------------
+        # PHASE 3: DURATION
+        # ---------------------------------------------------------
+        duration_predictions = {}
+
+        time_items = [
+            item
+            for item in feature_data
+            if item["exercise"]["measurement_type"]
+            == "time"
+        ]
+
+        if time_items:
+            print(
+                "[ML] BATCH PHASE 3: DURATION",
+                flush=True,
+            )
+
+            self.duration_bundle = self._load_model(
+                self.duration_model_path,
+                "duration",
+            )
+
+            for item in time_items:
+                exercise = item["exercise"]
+                features = item["features"]
+                exercise_id = exercise["id"]
+
+                print(
+                    f"[ML] DURATION prediction: "
+                    f"{exercise_id}",
+                    flush=True,
+                )
+
+                duration_predictions[
+                    exercise_id
+                ] = self._predict(
+                    bundle=self.duration_bundle,
+                    features=features,
+                )
+
+            print(
+                "[ML] DURATION PHASE COMPLETE",
+                flush=True,
+            )
+
+            # -----------------------------------------------------
+            # RELEASE DURATION
+            # -----------------------------------------------------
+            self.duration_bundle = None
+
+            gc.collect()
+
+            print(
+                "[ML] DURATION model released from memory",
+                flush=True,
+            )
+
+        # ---------------------------------------------------------
+        # BUILD FINAL PREDICTIONS
+        # ---------------------------------------------------------
+        predictions = []
+
+        for item in feature_data:
+            exercise = item["exercise"]
+            exercise_id = exercise["id"]
+            measurement_type = exercise[
+                "measurement_type"
+            ]
+
+            if measurement_type == "reps":
+                predictions.append(
+                    DosagePrediction(
+                        exercise_id=exercise_id,
+                        sets=sets_predictions[
+                            exercise_id
+                        ],
+                        reps=reps_predictions[
+                            exercise_id
+                        ],
+                        duration_seconds=None,
+                    )
+                )
+
+            else:
+                predictions.append(
+                    DosagePrediction(
+                        exercise_id=exercise_id,
+                        sets=sets_predictions[
+                            exercise_id
+                        ],
+                        reps=None,
+                        duration_seconds=duration_predictions[
+                            exercise_id
+                        ],
+                    )
+                )
+
+        print(
+            "[ML] BATCH PREDICTION COMPLETE",
+            flush=True,
+        )
+
+        return predictions
+
     def predict(
         self,
         user: UserProfile,
@@ -287,6 +598,12 @@ class MLDosagePredictor(Week1DosagePredictor):
     ) -> DosagePrediction:
         """
         Predict dosage for a single exercise.
+
+        Kept for compatibility with existing code.
+
+        For full plan generation, Week1DosageService now uses
+        predict_batch() so large models are not retained
+        simultaneously.
         """
 
         exercise_id = exercise.get("id")
@@ -324,11 +641,15 @@ class MLDosagePredictor(Week1DosagePredictor):
         )
 
         print(
-            f"[ML] Measurement type: {measurement_type}",
+            f"[ML] Measurement type: "
+            f"{measurement_type}",
             flush=True,
         )
 
-        if measurement_type not in {"reps", "time"}:
+        if measurement_type not in {
+            "reps",
+            "time",
+        }:
             raise ValueError(
                 f"Unsupported measurement_type: "
                 f"{measurement_type!r}"
@@ -435,7 +756,8 @@ class MLDosagePredictor(Week1DosagePredictor):
             )
 
             print(
-                f"[ML] PREDICT COMPLETE: {exercise_id}",
+                f"[ML] PREDICT COMPLETE: "
+                f"{exercise_id}",
                 flush=True,
             )
 
@@ -492,7 +814,8 @@ class MLDosagePredictor(Week1DosagePredictor):
         )
 
         print(
-            f"[ML] PREDICT COMPLETE: {exercise_id}",
+            f"[ML] PREDICT COMPLETE: "
+            f"{exercise_id}",
             flush=True,
         )
 
