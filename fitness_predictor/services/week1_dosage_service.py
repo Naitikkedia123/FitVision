@@ -1,13 +1,12 @@
 from typing import Any
 
-import streamlit as st
-
 from ml.ml_predictor import MLDosagePredictor
 from rules.dosage_validator import (
     ValidatedDosage,
     validate_predictions,
 )
 from models.user_profile import UserProfile
+
 
 class Week1DosageService:
     def __init__(self, predictor=None):
@@ -49,42 +48,57 @@ class Week1DosageService:
     ) -> list[ValidatedDosage]:
 
         print(
-            f"[DOSAGE] GENERATE START - {len(exercises)} exercises",
+            f"[DOSAGE] GENERATE START - "
+            f"{len(exercises)} exercises",
             flush=True,
         )
 
         if not isinstance(user, UserProfile):
-            raise TypeError("user must be a UserProfile.")
+            raise TypeError(
+                "user must be a UserProfile."
+            )
 
         if not isinstance(exercises, list):
-            raise TypeError("exercises must be a list.")
+            raise TypeError(
+                "exercises must be a list."
+            )
 
-        predictions = []
-
-        for i, exercise in enumerate(exercises, start=1):
+        if not exercises:
             print(
-                f"[DOSAGE] PREDICT {i}/{len(exercises)}: "
-                f"{exercise.get('id')}",
+                "[DOSAGE] No exercises supplied",
                 flush=True,
             )
 
-            prediction = self.predictor.predict(
-                user,
-                exercise,
-            )
+            return []
 
-            print(
-                f"[DOSAGE] PREDICT COMPLETE: "
-                f"{exercise.get('id')}",
-                flush=True,
-            )
+        print(
+            "[DOSAGE] Starting memory-efficient "
+            "batch prediction",
+            flush=True,
+        )
 
-            predictions.append(prediction)
+        predictions = self.predictor.predict_batch(
+            user=user,
+            exercises=exercises,
+        )
 
-        print("[DOSAGE] VALIDATING PREDICTIONS", flush=True)
+        print(
+            "[DOSAGE] BATCH PREDICTION COMPLETE",
+            flush=True,
+        )
 
-        result = validate_predictions(predictions)
+        print(
+            "[DOSAGE] VALIDATING PREDICTIONS",
+            flush=True,
+        )
 
-        print("[DOSAGE] GENERATE COMPLETE", flush=True)
+        result = validate_predictions(
+            predictions
+        )
+
+        print(
+            "[DOSAGE] GENERATE COMPLETE",
+            flush=True,
+        )
 
         return result
