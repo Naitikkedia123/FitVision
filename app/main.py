@@ -2551,7 +2551,6 @@ def render_dashboard() -> None:
 
     with st.container(
         horizontal=True,
-        wrap=False,
         horizontal_alignment="left",
         gap="small",
         key="dashboard-day-rail",
