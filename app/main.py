@@ -2549,6 +2549,23 @@ def render_dashboard() -> None:
     # using query parameters/browser navigation.
     rail_css = []
 
+    rail_css.append(
+        """
+        .st-key-dashboard-day-rail [data-testid="stHorizontalBlock"] {
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
+            overflow-y: hidden !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            scrollbar-width: thin !important;
+        }
+
+        .st-key-dashboard-day-rail [data-testid="stHorizontalBlock"] > div {
+            flex: 0 0 auto !important;
+        }
+        """
+    )
+
     with st.container(
         horizontal=True,
         horizontal_alignment="left",
