@@ -13,7 +13,7 @@ from model_downloader import ensure_model_available
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 SETS_MODEL_PATH = (
-    PROJECT_ROOT / "models" / "sets_model.joblib"
+    PROJECT_ROOT / "models" / "sets_model_uncompressed.joblib"
 )
 
 REPS_MODEL_PATH = (
