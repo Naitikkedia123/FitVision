@@ -5,7 +5,7 @@ numpy==1.26.4
 pandas==2.2.3
 scipy==1.17.1
 
-mediapipe==0.10.21
+mediapipe==0.10.33
 opencv-python-headless==4.11.0.86
 Pillow==12.3.0
 protobuf==5.29.5
