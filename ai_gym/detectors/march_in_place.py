@@ -4,324 +4,101 @@ from ai_gym.core.base_exercise import BaseExercise
 
 
 class MarchInPlaceDetector(BaseExercise):
-    """
-    Tracks cumulative marching time.
+    """Tracks practical marching from alternating knee lift."""
 
-    The timer does not reset because of a single bad frame.
-    Timing pauses only after marching has been inactive for a
-    short continuous period.
-    """
-
-    KNEE_RAISE_THRESHOLD = 0.04
-    KNEE_RELEASE_THRESHOLD = 0.025
-
-    STEP_COOLDOWN_SECONDS = 0.20
+    KNEE_RAISE_THRESHOLD = 0.03
+    KNEE_RELEASE_THRESHOLD = 0.018
+    STEP_COOLDOWN_SECONDS = 0.18
     MARCH_TIMEOUT_SECONDS = 1.50
 
     def __init__(self):
         super().__init__(measurement_type="time")
-
         self.stage = "not_marching"
         self.duration_seconds = 0.0
-
         self._start_time = None
         self._accumulated_duration = 0.0
-
-        self._left_knee_raised = False
-        self._right_knee_raised = False
-
-        self._last_step_time = None
-        self._last_knee = None
         self._last_valid_time = None
+        self._last_step_time = 0.0
+        self._left_up = False
+        self._right_up = False
 
     def process(self, landmarks):
         required = [23, 24, 25, 26]
         now = time.monotonic()
-
-        # -----------------------------------------------------
-        # Landmarks unavailable
-        # -----------------------------------------------------
-
-        if (
-            landmarks is None
-            or len(landmarks) <= max(required)
-        ):
+        if landmarks is None or len(landmarks) <= max(required):
             self._handle_missing_frame(now)
+            return {"duration_seconds": round(self.duration_seconds, 2), "stage": self.stage, "status": "Landmarks unavailable"}
 
-            return {
-                "duration_seconds": round(
-                    self.duration_seconds,
-                    2,
-                ),
-                "stage": self.stage,
-                "status": "Landmarks unavailable",
-            }
-
-        # -----------------------------------------------------
-        # Visibility check
-        # -----------------------------------------------------
-
-        if any(
-            getattr(
-                landmarks[i],
-                "visibility",
-                1.0,
-            ) < 0.5
-            for i in required
-        ):
+        if any(getattr(landmarks[i], "visibility", 1.0) < 0.45 for i in required):
             self._handle_missing_frame(now)
+            return {"duration_seconds": round(self.duration_seconds, 2), "stage": self.stage, "status": "Legs not clearly visible"}
 
-            return {
-                "duration_seconds": round(
-                    self.duration_seconds,
-                    2,
-                ),
-                "stage": self.stage,
-                "status": "Body not clearly visible",
-            }
+        hip_y = (landmarks[23].y + landmarks[24].y) / 2
+        left_lift = hip_y - landmarks[25].y
+        right_lift = hip_y - landmarks[26].y
+        left_high = left_lift >= self.KNEE_RAISE_THRESHOLD
+        right_high = right_lift >= self.KNEE_RAISE_THRESHOLD
+        left_low = left_lift <= self.KNEE_RELEASE_THRESHOLD
+        right_low = right_lift <= self.KNEE_RELEASE_THRESHOLD
 
-        self._last_valid_time = now
+        if left_high and not self._left_up:
+            self._left_up = True
+            self._start_march(now)
+        elif left_low:
+            self._left_up = False
 
-        # -----------------------------------------------------
-        # Hip midpoint
-        # -----------------------------------------------------
-
-        hip_y = (
-            landmarks[23].y
-            + landmarks[24].y
-        ) / 2
-
-        # -----------------------------------------------------
-        # Knee lift
-        # -----------------------------------------------------
-
-        left_lift = (
-            hip_y
-            - landmarks[25].y
-        )
-
-        right_lift = (
-            hip_y
-            - landmarks[26].y
-        )
-
-        # -----------------------------------------------------
-        # Detect knee transitions
-        # -----------------------------------------------------
-
-        left_step = self._update_left_knee(
-            left_lift
-        )
-
-        right_step = self._update_right_knee(
-            right_lift
-        )
-
-        step_detected = False
-        detected_knee = None
-
-        if left_step:
-            step_detected = True
-            detected_knee = "left"
-
-        if right_step:
-            step_detected = True
-
-            if detected_knee is None:
-                detected_knee = "right"
-
-        # -----------------------------------------------------
-        # Prefer alternating knees
-        # -----------------------------------------------------
-
-        if step_detected:
-
-            if (
-                self._last_knee is not None
-                and detected_knee == self._last_knee
-            ):
-                # Same knee can still be accepted after the
-                # cooldown. This prevents the detector from
-                # becoming too strict for slower marching.
-                pass
-
-            if (
-                self._last_step_time is None
-                or (
-                    now - self._last_step_time
-                    >= self.STEP_COOLDOWN_SECONDS
-                )
-            ):
-                self._last_step_time = now
-                self._last_knee = detected_knee
-
-                if self._start_time is None:
-                    self._start_time = now
-
-                self.stage = "marching"
-
-        # -----------------------------------------------------
-        # Continue timing while marching remains active
-        # -----------------------------------------------------
+        if right_high and not self._right_up:
+            self._right_up = True
+            self._start_march(now)
+        elif right_low:
+            self._right_up = False
 
         if self._start_time is not None:
-
-            if (
-                self._last_step_time is not None
-                and (
-                    now - self._last_step_time
-                    <= self.MARCH_TIMEOUT_SECONDS
-                )
-            ):
-                self.duration_seconds = (
-                    self._accumulated_duration
-                    + (
-                        now
-                        - self._start_time
-                    )
-                )
-
-                self.stage = "marching"
-
-            else:
-                self._pause(now)
-
-        # -----------------------------------------------------
-        # No timer started yet
-        # -----------------------------------------------------
-
-        if self._start_time is None:
-            self.duration_seconds = (
-                self._accumulated_duration
-            )
-
-        if self.stage == "marching":
-            status = "Keep marching"
+            self._last_valid_time = now
+            self.duration_seconds = self._accumulated_duration + (now - self._start_time)
+            self.stage = "marching"
+        elif self._last_valid_time is not None and now - self._last_valid_time <= self.MARCH_TIMEOUT_SECONDS:
+            self.stage = "marching"
         else:
-            status = "Lift your knees and march"
+            self.stage = "not_marching"
 
         return {
-            "duration_seconds": round(
-                self.duration_seconds,
-                2,
-            ),
+            "duration_seconds": round(self.duration_seconds, 2),
             "stage": self.stage,
-            "left_knee_lift": round(
-                left_lift,
-                4,
-            ),
-            "right_knee_lift": round(
-                right_lift,
-                4,
-            ),
-            "knee_lift": round(
-                max(
-                    left_lift,
-                    right_lift,
-                ),
-                4,
-            ),
-            "last_knee": self._last_knee,
-            "status": status,
+            "left_knee_lift": round(left_lift, 3),
+            "right_knee_lift": round(right_lift, 3),
+            "status": "Keep marching" if self.stage == "marching" else "Lift either knee to start",
         }
 
-    def _update_left_knee(self, lift):
-        """
-        Detect a left knee raise transition.
-        """
-
-        if not self._left_knee_raised:
-
-            if lift >= self.KNEE_RAISE_THRESHOLD:
-                self._left_knee_raised = True
-                return True
-
-        else:
-
-            if lift <= self.KNEE_RELEASE_THRESHOLD:
-                self._left_knee_raised = False
-
-        return False
-
-    def _update_right_knee(self, lift):
-        """
-        Detect a right knee raise transition.
-        """
-
-        if not self._right_knee_raised:
-
-            if lift >= self.KNEE_RAISE_THRESHOLD:
-                self._right_knee_raised = True
-                return True
-
-        else:
-
-            if lift <= self.KNEE_RELEASE_THRESHOLD:
-                self._right_knee_raised = False
-
-        return False
+    def _start_march(self, now):
+        if self._start_time is None:
+            self._start_time = now
+            self._last_valid_time = now
+            self.stage = "marching"
 
     def _handle_missing_frame(self, now):
-        """
-        Do not immediately reset timing because of one bad frame.
-
-        The accumulated duration is preserved. The timer is paused
-        only when the detector has been inactive long enough.
-        """
-
         if self._start_time is None:
             return
-
-        if (
-            self._last_valid_time is not None
-            and (
-                now - self._last_valid_time
-                <= self.MARCH_TIMEOUT_SECONDS
-            )
-        ):
-            self.duration_seconds = (
-                self._accumulated_duration
-                + (
-                    now
-                    - self._start_time
-                )
-            )
-
+        if self._last_valid_time is not None and now - self._last_valid_time <= self.MARCH_TIMEOUT_SECONDS:
+            self.duration_seconds = self._accumulated_duration + (now - self._start_time)
             return
-
         self._pause(now)
 
     def _pause(self, now):
-        """
-        Pause timing without losing accumulated duration.
-        """
-
         if self._start_time is not None:
-
-            self._accumulated_duration += (
-                now - self._start_time
-            )
-
-            self._start_time = None
-
-        self.duration_seconds = (
-            self._accumulated_duration
-        )
-
+            self._accumulated_duration += now - self._start_time
+        self._start_time = None
+        self.duration_seconds = self._accumulated_duration
         self.stage = "not_marching"
+        self._last_valid_time = None
 
     def reset(self):
         self.reset_common_state()
-
         self.stage = "not_marching"
         self.duration_seconds = 0.0
-
         self._start_time = None
         self._accumulated_duration = 0.0
-
-        self._left_knee_raised = False
-        self._right_knee_raised = False
-
-        self._last_step_time = None
-        self._last_knee = None
         self._last_valid_time = None
+        self._last_step_time = 0.0
+        self._left_up = False
+        self._right_up = False

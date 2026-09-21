@@ -1,76 +1,59 @@
 from ai_gym.core.base_exercise import BaseExercise
+import time
 
 
 class SquatDetector(BaseExercise):
-    DOWN_THRESHOLD = 100   
-    UP_THRESHOLD = 160     
-    MIN_VISIBILITY = 0.7
+    """Counts practical bodyweight squats with relaxed depth thresholds."""
 
-    LEFT_HIP = 23
-    LEFT_KNEE = 25
-    LEFT_ANKLE = 27
-    RIGHT_HIP = 24
-    RIGHT_KNEE = 26
-    RIGHT_ANKLE = 28
-    LEFT_SHOULDER = 11
-    RIGHT_SHOULDER = 12
+    DOWN_THRESHOLD = 115
+    UP_THRESHOLD = 145
+    MIN_VISIBILITY = 0.55
+    MIN_REP_INTERVAL = 0.30
 
     def __init__(self):
-        super().__init__()
-
-    def reset(self):
+        super().__init__(measurement_type="reps")
+        self.stage = "up"
         self.reps = 0
-        self.stage = None
+        self._last_rep_time = 0.0
 
     def process(self, landmarks):
-        left_knee_angle = self.calculate_angle(
-            self.get_point(landmarks, self.LEFT_HIP),
-            self.get_point(landmarks, self.LEFT_KNEE),
-            self.get_point(landmarks, self.LEFT_ANKLE)
-        )
+        required = [11, 12, 23, 24, 25, 26, 27, 28]
+        if landmarks is None or len(landmarks) <= max(required):
+            return {"reps": self.reps, "stage": self.stage, "status": "Landmarks unavailable"}
 
-        right_knee_angle = self.calculate_angle(
-            self.get_point(landmarks, self.RIGHT_HIP),
-            self.get_point(landmarks, self.RIGHT_KNEE),
-            self.get_point(landmarks, self.RIGHT_ANKLE)
-        )
-
-        left_vis = landmarks[self.LEFT_KNEE].visibility
-        right_vis = landmarks[self.RIGHT_KNEE].visibility
+        left_vis = min(getattr(landmarks[i], "visibility", 1.0) for i in (23, 25, 27))
+        right_vis = min(getattr(landmarks[i], "visibility", 1.0) for i in (24, 26, 28))
+        if max(left_vis, right_vis) < self.MIN_VISIBILITY:
+            return {"reps": self.reps, "stage": self.stage, "status": "Legs not clearly visible"}
 
         if left_vis >= right_vis:
-            knee_angle = left_knee_angle
-            hip_idx, knee_idx, ankle_idx, shoulder_idx = self.LEFT_HIP, self.LEFT_KNEE, self.LEFT_ANKLE, self.LEFT_SHOULDER
+            hip, knee, ankle = 23, 25, 27
         else:
-            knee_angle = right_knee_angle
-            hip_idx, knee_idx, ankle_idx, shoulder_idx = self.RIGHT_HIP, self.RIGHT_KNEE, self.RIGHT_ANKLE, self.RIGHT_SHOULDER
+            hip, knee, ankle = 24, 26, 28
 
-        back_angle = self.calculate_angle(
-            self.get_point(landmarks, shoulder_idx),
-            self.get_point(landmarks, hip_idx),
-            self.get_point(landmarks, knee_idx)
-        )
+        knee_angle = self.calculate_angle(self.get_point(landmarks, hip), self.get_point(landmarks, knee), self.get_point(landmarks, ankle))
+        hip_angle = self.calculate_angle(self.get_point(landmarks, 11 if hip == 23 else 12), self.get_point(landmarks, hip), self.get_point(landmarks, knee))
 
-        key_landmark_visible = landmarks[hip_idx].visibility >= self.MIN_VISIBILITY and landmarks[knee_idx].visibility >= self.MIN_VISIBILITY and landmarks[ankle_idx].visibility >= self.MIN_VISIBILITY
-
-        if key_landmark_visible:
-            if knee_angle < self.DOWN_THRESHOLD:
-                self.stage = "down"
-
-            if knee_angle >= self.UP_THRESHOLD and self.stage == "down":
-                self.stage = "up"
+        if self.stage == "up" and knee_angle <= self.DOWN_THRESHOLD:
+            self.stage = "down"
+        elif self.stage == "down" and knee_angle >= self.UP_THRESHOLD:
+            now = time.monotonic()
+            if now - self._last_rep_time >= self.MIN_REP_INTERVAL:
                 self.reps += 1
-
-        if self.stage == "down":
-            depth_status = "GOOD DEPTH" if knee_angle <= self.DOWN_THRESHOLD else "TOO HIGH"
-        elif self.stage == "up":
-            depth_status = "STANDING"
-        else:
-            depth_status = "N/A"
+                self._last_rep_time = now
+            self.stage = "up"
 
         return {
             "reps": self.reps,
-            "knee_angle": int(knee_angle),
-            "back_angle": int(back_angle),
-            "depth_status": depth_status
+            "stage": self.stage,
+            "knee_angle": round(knee_angle, 1),
+            "hip_angle": round(hip_angle, 1),
+            "depth_status": "GOOD DEPTH" if knee_angle <= self.DOWN_THRESHOLD else "READY",
+            "status": "Stand up" if self.stage == "down" else "Lower into squat",
         }
+
+    def reset(self):
+        self.reset_common_state()
+        self.stage = "up"
+        self.reps = 0
+        self._last_rep_time = 0.0

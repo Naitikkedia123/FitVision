@@ -1,51 +1,58 @@
 from ai_gym.core.base_exercise import BaseExercise
+import time
 
 
 class StandingSideLegRaiseDetector(BaseExercise):
-    """Counts controlled lateral standing leg raises."""
+    """Counts side leg raises with a relaxed lateral movement threshold."""
 
-    MIN_VISIBILITY = 0.55
-    RAISE_THRESHOLD = 0.12
-    RELEASE_THRESHOLD = 0.07
+    MIN_VISIBILITY = 0.45
+    RAISE_THRESHOLD = 0.085
+    RELEASE_THRESHOLD = 0.060
+    MIN_REP_INTERVAL = 0.30
 
     def __init__(self):
         super().__init__(measurement_type="reps")
-        self.stage = "down"
         self.reps = 0
+        self.stage = "down"
         self.active_side = None
+        self._last_rep_time = 0.0
 
     def process(self, landmarks):
-        required = [23, 24, 25, 26, 27, 28]
+        required = [23, 24, 27, 28]
         if landmarks is None or len(landmarks) <= max(required):
             return {"reps": self.reps, "stage": self.stage, "status": "Landmarks unavailable"}
-        if any(getattr(landmarks[i], "visibility", 1.0) < self.MIN_VISIBILITY for i in required):
-            return {"reps": self.reps, "stage": self.stage, "status": "Body not clearly visible"}
+        if max(getattr(landmarks[i], "visibility", 1.0) for i in required) < self.MIN_VISIBILITY:
+            return {"reps": self.reps, "stage": self.stage, "status": "Legs not clearly visible"}
 
         hip_x = (landmarks[23].x + landmarks[24].x) / 2
-        left = abs(landmarks[27].x - hip_x)
-        right = abs(landmarks[28].x - hip_x)
-        amount = max(left, right)
-        side = "left" if left >= right else "right"
+        left_amount = abs(landmarks[27].x - hip_x)
+        right_amount = abs(landmarks[28].x - hip_x)
+        amount = max(left_amount, right_amount)
+        side = "left" if left_amount >= right_amount else "right"
 
         if self.stage == "down" and amount >= self.RAISE_THRESHOLD:
             self.stage = "up"
             self.active_side = side
         elif self.stage == "up":
-            active_amount = left if self.active_side == "left" else right
+            active_amount = left_amount if self.active_side == "left" else right_amount
             if active_amount <= self.RELEASE_THRESHOLD:
-                self.reps += 1
+                now = time.monotonic()
+                if now - self._last_rep_time >= self.MIN_REP_INTERVAL:
+                    self.reps += 1
+                    self._last_rep_time = now
                 self.stage = "down"
-                self.active_side = None
 
         return {
-            "reps": self.reps, "stage": self.stage,
-            "leg_distance": round(amount, 4),
+            "reps": self.reps,
+            "stage": self.stage,
+            "side_leg_amount": round(amount, 3),
             "side": self.active_side,
-            "status": "Raise your leg to the side" if self.stage == "down" else "Lower your leg",
+            "status": "Raise your leg sideways" if self.stage == "down" else "Return to center",
         }
 
     def reset(self):
         self.reset_common_state()
-        self.stage = "down"
         self.reps = 0
+        self.stage = "down"
         self.active_side = None
+        self._last_rep_time = 0.0

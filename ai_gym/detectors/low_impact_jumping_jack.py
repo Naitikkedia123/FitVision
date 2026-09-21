@@ -1,19 +1,22 @@
 from ai_gym.core.base_exercise import BaseExercise
+import time
 
 
 class LowImpactJumpingJackDetector(BaseExercise):
-    """Counts low-impact step-out/step-in jumping jacks."""
+    """Counts low-impact jumping jacks with relaxed arm/leg spread."""
 
-    MIN_VISIBILITY = 0.50
-    OUT_LEG_RATIO = 1.30
-    OUT_ARM_RATIO = 1.75
-    IN_LEG_RATIO = 1.10
-    IN_ARM_RATIO = 1.45
+    MIN_VISIBILITY = 0.45
+    OUT_LEG_RATIO = 1.15
+    OUT_ARM_RATIO = 1.45
+    IN_LEG_RATIO = 1.00
+    IN_ARM_RATIO = 1.25
+    MIN_REP_INTERVAL = 0.30
 
     def __init__(self):
         super().__init__(measurement_type="reps")
         self.stage = "in"
         self.reps = 0
+        self._last_rep_time = 0.0
 
     def process(self, landmarks):
         required = [11, 12, 15, 16, 27, 28]
@@ -28,25 +31,30 @@ class LowImpactJumpingJackDetector(BaseExercise):
 
         arms_out = wrist_width >= shoulder_width * self.OUT_ARM_RATIO
         legs_out = ankle_width >= shoulder_width * self.OUT_LEG_RATIO
-        out = arms_out and legs_out
-
         arms_in = wrist_width <= shoulder_width * self.IN_ARM_RATIO
         legs_in = ankle_width <= shoulder_width * self.IN_LEG_RATIO
+        out = arms_out and legs_out
         inside = arms_in and legs_in
 
         if self.stage == "in" and out:
             self.stage = "out"
         elif self.stage == "out" and inside:
-            self.reps += 1
+            now = time.monotonic()
+            if now - self._last_rep_time >= self.MIN_REP_INTERVAL:
+                self.reps += 1
+                self._last_rep_time = now
             self.stage = "in"
 
         return {
-            "reps": self.reps, "stage": self.stage,
-            "arms_out": arms_out, "legs_out": legs_out,
-            "status": "Step out" if self.stage == "in" else "Step back in",
+            "reps": self.reps,
+            "stage": self.stage,
+            "arm_width_ratio": round(wrist_width / shoulder_width, 2),
+            "leg_width_ratio": round(ankle_width / shoulder_width, 2),
+            "status": "Open arms and legs" if self.stage == "in" else "Bring arms and legs back",
         }
 
     def reset(self):
         self.reset_common_state()
         self.stage = "in"
         self.reps = 0
+        self._last_rep_time = 0.0
